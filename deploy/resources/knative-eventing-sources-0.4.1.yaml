@@ -547,12 +547,12 @@ spec:
       containers:
       - env:
         - name: K8S_RA_IMAGE
-          value: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/kuberneteseventsource@sha256:0b73afb46a676776f059c8999c5c56a6db4a0267b9e67e868737ae59fc4992b6
+          value: quay.io/openshift-knative/knative-eventing-sources-kuberneteseventsource:v0.4.1
         - name: GH_RA_IMAGE
-          value: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/github_receive_adapter@sha256:175407a69f62339e56e077ac87f508db4fb873653a68b03eab6b7cb3eea8e507
+          value: quay.io/openshift-knative/knative-eventing-sources-github-receive-adapter:v0.4.1
         - name: CRONJOB_RA_IMAGE
-          value: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/cronjob_receive_adapter@sha256:ce1c64dfcb372574280270541dd23e816cffb59b15f6ae03f3e8176c25e795fd
-        image: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/manager@sha256:2d1d7a90125e10d7e788a5cc770f0a3627bda5c51cd6f380900092d1a4a67f44
+          value: quay.io/openshift-knative/knative-eventing-sources-cronjob-receive-adapter:v0.4.1
+        image: quay.io/openshift-knative/knative-eventing-sources-manager:v0.4.1
         name: manager
         resources:
           limits:
