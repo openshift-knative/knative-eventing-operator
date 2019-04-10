@@ -6,9 +6,12 @@ If you don't already have it, install
 ## Create a release
 
 Update [the resource files](deploy/resources/) with the proper
-[quay.io](https://quay.io/organization/openshift-knative) images, and
-then run these commands:
+[quay.io](https://quay.io/organization/openshift-knative) images,
+verify that [version.go](version/version.go) is correct, and then run
+these commands:
 
-    $ VERSION="vX.Y.Z"
-    $ operator-sdk build --docker-build-args "--build-arg version=$VERSION" quay.io/openshift-knative/knative-eventing-operator:$VERSION
+    $ VERSION="vX.Y.Z"      # ensure this matches version/version.go!
+    $ operator-sdk build quay.io/openshift-knative/knative-eventing-operator:$VERSION
     $ docker push quay.io/openshift-knative/knative-eventing-operator:$VERSION
+    $ git tag $VERSION
+    $ git push --tags

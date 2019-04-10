@@ -246,11 +246,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a6bf1689470f489ac0d4109cdaaf421121decaf304ccdc4172afbc326fd65625"
+  digest = "1:33ebb6e7d555376a0df26a576c22b921aed11faa37a23c24436d0fca5112f0e0"
   name = "github.com/jcrossley3/manifestival"
-  packages = ["yaml"]
+  packages = ["."]
   pruneopts = "NT"
-  revision = "f5dbe9f91641e3a25027414af373b4171bd84f4f"
+  revision = "8f133cb9c6c9d11ce74eeee056d3fc76d5e756ca"
 
 [[projects]]
   digest = "1:f5b9328966ccea0970b1d15075698eff0ddb3e75889560aad2e9f76b289b536a"
@@ -313,8 +313,7 @@
   version = "1.0.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:afbc22826491c47d59cc85d27be704fb82a479064d774d3ce58a131bf2426141"
+  digest = "1:674610d54812d3c36ab7861fc826176bf581a9426cc09abec0107414c17f89cd"
   name = "github.com/operator-framework/operator-sdk"
   packages = [
     "pkg/k8sutil",
@@ -324,7 +323,8 @@
     "version",
   ]
   pruneopts = "NT"
-  revision = "b7dd8232e32c2a25c10ad37e4b28fd3bf90717dd"
+  revision = "7e07b20c9e22560fb22a3295b612eae7652b8b14"
+  version = "v0.7.0"
 
 [[projects]]
   digest = "1:93b1d84c5fa6d1ea52f4114c37714cddd84d5b78f151b62bb101128dd51399bf"
@@ -914,7 +914,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/go-openapi/spec",
-    "github.com/jcrossley3/manifestival/yaml",
+    "github.com/jcrossley3/manifestival",
     "github.com/operator-framework/operator-sdk/pkg/k8sutil",
     "github.com/operator-framework/operator-sdk/pkg/leader",
     "github.com/operator-framework/operator-sdk/pkg/log/zap",
