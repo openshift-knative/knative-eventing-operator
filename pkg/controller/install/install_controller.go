@@ -3,10 +3,10 @@ package install
 import (
 	"context"
 	"flag"
-	"os"
 
-	"github.com/jcrossley3/manifestival/yaml"
+	mf "github.com/jcrossley3/manifestival"
 	eventingv1alpha1 "github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1"
+	"github.com/openshift-knative/knative-eventing-operator/version"
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -24,8 +24,14 @@ import (
 var (
 	filename = flag.String("filename", "deploy/resources",
 		"The filename containing the YAML resources to apply")
+	recursive = flag.Bool("recursive", false,
+		"If filename is a directory, process all manifests recursively")
 	autoinstall = flag.Bool("install", false,
 		"Automatically creates an Install resource if none exist")
+	olm = flag.Bool("olm", false,
+		"Ignores resources managed by the Operator Lifecycle Manager")
+	namespace = flag.String("namespace", "",
+		"Overrides the hard-coded namespace references in the manifest")
 	log = logf.Log.WithName("controller_install")
 )
 
@@ -40,7 +46,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	return &ReconcileInstall{
 		client: mgr.GetClient(),
 		scheme: mgr.GetScheme(),
-		config: yaml.NewYamlManifest(*filename, mgr.GetConfig())}
+		config: mf.NewYamlManifest(*filename, *recursive, mgr.GetConfig())}
 }
 
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
@@ -73,7 +79,7 @@ type ReconcileInstall struct {
 	// that reads objects from the cache and writes to the apiserver
 	client client.Client
 	scheme *runtime.Scheme
-	config *yaml.YamlManifest
+	config mf.Manifest
 }
 
 // Reconcile reads that state of the cluster for a Install object and makes changes based on the state read
@@ -90,41 +96,46 @@ func (r *ReconcileInstall) Reconcile(request reconcile.Request) (reconcile.Resul
 	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			// Request object not found, could have been deleted after reconcile request.
-			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
-			// Return and don't requeue
-			r.config.Delete()
+			r.config.DeleteAll()
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
-	if instance.Status.Resources != nil {
-		// we've already successfully applied our YAML
-		return reconcile.Result{}, nil
-	}
-	// Apply the resources in the YAML file
-	err = r.config.Apply(instance)
-	if err != nil {
-		return reconcile.Result{}, err
-	}
-	// Update status
-	instance.Status.Resources = r.config.ResourceNames()
-	instance.Status.Version = getResourceVersion()
-	err = r.client.Status().Update(context.TODO(), instance)
-	if err != nil {
-		reqLogger.Error(err, "Failed to update status")
+	if err := r.install(instance); err != nil {
 		return reconcile.Result{}, err
 	}
 	return reconcile.Result{}, nil
 }
 
-func getResourceVersion() string {
-	v, found := os.LookupEnv("RESOURCE_VERSION")
-	if !found {
-		return "UNKNOWN"
+// Apply the embedded resources
+func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
+	// Filter resources as appropriate
+	filters := []mf.FilterFn{mf.ByOwner(instance)}
+	switch {
+	case *olm:
+		filters = append(filters, mf.ByOLM, mf.ByNamespace(instance.GetNamespace()))
+	case len(*namespace) > 0:
+		filters = append(filters, mf.ByNamespace(*namespace))
 	}
-	return v
+	r.config.Filter(filters...)
+
+	if instance.Status.Version == version.Version {
+		// we've already successfully applied our YAML
+		return nil
+	}
+	// Apply the resources in the YAML file
+	if err := r.config.ApplyAll(); err != nil {
+		return err
+	}
+
+	// Update status
+	instance.Status.Resources = r.config.ResourceNames()
+	instance.Status.Version = version.Version
+	if err := r.client.Status().Update(context.TODO(), instance); err != nil {
+		return err
+	}
+	return nil
 }
 
 func autoInstall(c client.Client, ns string) error {

@@ -1,12 +1,9 @@
 FROM registry.access.redhat.com/ubi7-dev-preview/ubi-minimal:7.6
 
-ARG version
-
 ENV OPERATOR=/usr/local/bin/knative-eventing-operator \
     USER_UID=1001 \
-    USER_NAME=knative-eventing-operator \
-    RESOURCE_VERSION=$version
-
+    USER_NAME=knative-eventing-operator
+    
 # install operator binary
 COPY build/_output/bin/knative-eventing-operator ${OPERATOR}
 
