@@ -103,9 +103,18 @@ func (r *ReconcileInstall) Reconcile(request reconcile.Request) (reconcile.Resul
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
-	if err := r.install(instance); err != nil {
-		return reconcile.Result{}, err
+
+	// stages hook for future work (e.g. deleteObsoleteResources)
+	stages := []func(*eventingv1alpha1.Install) error{
+		r.install,
 	}
+
+	for _, stage := range stages {
+		if err := stage(instance); err != nil {
+			return reconcile.Result{}, err
+		}
+	}
+
 	return reconcile.Result{}, nil
 }
 
