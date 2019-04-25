@@ -250,6 +250,24 @@ rules:
       - patch
       - delete
 
+# Sources finalizer
+  - apiGroups:
+      - sources.eventing.knative.dev
+    resources:
+      - awssqssources/finalizers
+      - containersources/finalizers
+      - cronjobsources/finalizers
+      - githubsources/finalizers
+      - kuberneteseventsources/finalizers
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
   # Source statuses update
   - apiGroups:
       - sources.eventing.knative.dev
