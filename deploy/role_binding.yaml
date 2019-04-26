@@ -17,7 +17,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-admin
+  name: knative-eventing-operator
 subjects:
 - kind: ServiceAccount
   name: knative-eventing-operator
