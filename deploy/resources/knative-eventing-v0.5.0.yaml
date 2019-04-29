@@ -163,6 +163,13 @@ rules:
       - "delete"
       - "patch"
       - "watch"
+  - apiGroups:
+      - "eventing.knative.dev"
+    resources:
+      - "brokers/finalizers"
+      - "triggers/finalizers"
+    verbs:
+      - "update"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -840,6 +847,7 @@ rules:
     - eventing.knative.dev
     resources:
     - channels/finalizers
+    - clusterchannelprovisioners/finalizers
     verbs:
     - update
   - apiGroups:
