@@ -9,7 +9,9 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - kind: Install
+    - description: Knative Eventing Installation
+      displayName: Install Operator
+      kind: Install
       name: installs.eventing.knative.dev
       version: v1alpha1
   description: Placeholder description
@@ -42,6 +44,7 @@ spec:
               - args:
                 - --install
                 - --namespace=$WATCH_NAMESPACE
+                - --filename=https://raw.githubusercontent.com/openshift/knative-eventing/release-v0.5.0/openshift/release/knative-eventing-v0.5.0.yaml,https://raw.githubusercontent.com/openshift/knative-eventing-sources/release-v0.5.0/openshift/release/knative-eventing-sources-v0.5.0.yaml
                 command:
                 - knative-eventing-operator
                 env:
