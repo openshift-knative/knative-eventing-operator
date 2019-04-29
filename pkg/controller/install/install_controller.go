@@ -9,7 +9,6 @@ import (
 	"github.com/openshift-knative/knative-eventing-operator/version"
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -35,7 +34,7 @@ var (
 // Add creates a new Install Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
 func Add(mgr manager.Manager) error {
-	manifest, err := mf.NewYamlManifest(*filename, *recursive, mgr.GetClient())
+	manifest, err := mf.NewManifest(*filename, *recursive, mgr.GetClient())
 	if err != nil {
 		return err
 	}
@@ -118,13 +117,13 @@ func (r *ReconcileInstall) Reconcile(request reconcile.Request) (reconcile.Resul
 
 // Apply the embedded resources
 func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
-	// Filter resources as appropriate
-	filters := []mf.FilterFn{mf.ByOwner(instance)}
+	// Transform resources as appropriate
+	fns := []mf.Transformer{mf.InjectOwner(instance)}
 
 	if len(*namespace) > 0 {
-		filters = append(filters, mf.ByNamespace(*namespace))
+		fns = append(fns, mf.InjectNamespace(*namespace))
 	}
-	r.config.Filter(filters...)
+	r.config.Transform(fns...)
 
 	if instance.Status.Version == version.Version {
 		// we've already successfully applied our YAML
@@ -136,7 +135,7 @@ func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
 	}
 
 	// Update status
-	instance.Status.Resources = r.config.ResourceNames()
+	instance.Status.Resources = r.config.Resources
 	instance.Status.Version = version.Version
 	if err := r.client.Status().Update(context.TODO(), instance); err != nil {
 		return err
@@ -144,24 +143,25 @@ func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
 	return nil
 }
 
-func autoInstall(c client.Client, ns string) error {
+func autoInstall(c client.Client, ns string) (err error) {
+	const path = "deploy/crds/eventing_v1alpha1_install_cr.yaml"
+	log.Info("Automatic Install requested", "namespace", ns)
 	installList := &eventingv1alpha1.InstallList{}
-	err := c.List(context.TODO(), &client.ListOptions{Namespace: ns}, installList)
+	err = c.List(context.TODO(), &client.ListOptions{Namespace: ns}, installList)
 	if err != nil {
 		log.Error(err, "Unable to list Installs")
 		return err
 	}
 	if len(installList.Items) == 0 {
-		install := &eventingv1alpha1.Install{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "auto-install",
-				Namespace: ns,
-			},
+		if manifest, err := mf.NewManifest(path, false, c); err == nil {
+			if err = manifest.Transform(mf.InjectNamespace(ns)).ApplyAll(); err != nil {
+				log.Error(err, "Unable to create Install")
+			}
+		} else {
+			log.Error(err, "Unable to create Install manifest")
 		}
-		err = c.Create(context.TODO(), install)
-		if err != nil {
-			log.Error(err, "Unable to create Install")
-		}
+	} else {
+		log.Info("Install found", "name", installList.Items[0].Name)
 	}
-	return nil
+	return err
 }
