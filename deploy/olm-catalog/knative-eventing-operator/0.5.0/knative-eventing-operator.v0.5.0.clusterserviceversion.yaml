@@ -10,8 +10,8 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - description: Knative Eventing Installation
-      displayName: Install Operator
+    - description: Represents an installation of a particular version of Knative Eventing
+      displayName: Knative Eventing
       kind: Install
       name: installs.eventing.knative.dev
       version: v1alpha1
