@@ -234,7 +234,6 @@ spec:
                   - knative-eventing-operator
                   args:
                     - --olm
-                    - --install
                   env:
                     - name: WATCH_NAMESPACE
                       valueFrom:

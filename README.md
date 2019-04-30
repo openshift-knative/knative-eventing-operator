@@ -6,8 +6,9 @@ appropriately for your cluster in the `default` namespace:
 
     kubectl apply -f deploy/crds/eventing_v1alpha1_install_crd.yaml
     kubectl apply -f deploy/
+    kubectl apply -f deploy/crds/eventing_v1alpha1_install_cr.yaml
 
-## Requirements
+## Prerequisites
 
 ### Knative Serving
 
@@ -23,9 +24,7 @@ It's not strictly required but does provide some handy tooling.
 
 The installation of Knative Eventing is triggered by the creation of
 [an `Install` custom
-resource](deploy/crds/eventing_v1alpha1_install_cr.yaml), and if the
-operator's `--install` option is passed, it'll create one in its
-target namespace if none exist.
+resource](deploy/crds/eventing_v1alpha1_install_cr.yaml).
 
 The following are all equivalent, but the latter may suffer from name
 conflicts.
@@ -117,3 +116,41 @@ is "friendlier". If you have docker installed, use [this
 script](https://github.com/operator-framework/operator-lifecycle-manager/blob/master/scripts/run_console_local.sh)
 to fire it up on <http://localhost:9000>.
 
+#### Using kubectl
+
+To install Knative Eventing into the `knative-eventing` namespace, apply
+the following resources:
+
+```
+cat <<-EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: knative-eventing
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: knative-eventing
+  namespace: knative-eventing
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: knative-eventing-operator-sub
+  generateName: knative-eventing-operator-
+  namespace: knative-eventing
+spec:
+  source: knative-eventing-operator
+  sourceNamespace: olm
+  name: knative-eventing-operator
+  channel: alpha
+---
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Install
+metadata:
+  name: knative-eventing
+  namespace: knative-eventing
+EOF
+```
