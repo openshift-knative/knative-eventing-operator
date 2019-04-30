@@ -537,12 +537,12 @@ spec:
         - name: CRONJOB_RA_IMAGE
           value: quay.io/openshift-knative/knative-eventing-sources-cronjob-receive-adapter:v0.5.0
         resources:
-          limits:
-            cpu: 100m
-            memory: 30Mi
           requests:
             cpu: 100m
-            memory: 20Mi
+            memory: 1000Mi
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
       terminationGracePeriodSeconds: 10
 ---
 apiVersion: v1
