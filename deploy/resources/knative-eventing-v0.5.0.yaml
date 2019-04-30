@@ -116,6 +116,15 @@ rules:
       - "patch"
       - "watch"
   - apiGroups:
+      - security.openshift.io
+    resourceNames:
+      - privileged
+      - anyuid
+    resources:
+      - securitycontextconstraints
+    verbs:
+      - use
+  - apiGroups:
       - "networking.istio.io"
     resources:
       - "virtualservices"
@@ -892,6 +901,15 @@ rules:
     verbs:
       - update
   - apiGroups:
+      - security.openshift.io
+    resourceNames:
+      - privileged
+      - anyuid
+    resources:
+      - securitycontextconstraints
+    verbs:
+      - use
+  - apiGroups:
       - networking.istio.io
     resources:
       - virtualservices
@@ -967,6 +985,15 @@ rules:
       - get
       - list
       - watch
+  - apiGroups:
+      - security.openshift.io
+    resourceNames:
+      - privileged
+      - anyuid
+    resources:
+      - securitycontextconstraints
+    verbs:
+      - use
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
