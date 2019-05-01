@@ -7,7 +7,7 @@ import (
 	mf "github.com/jcrossley3/manifestival"
 	eventingv1alpha1 "github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1"
 	"github.com/openshift-knative/knative-eventing-operator/version"
-	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
+	"github.com/operator-framework/operator-sdk/pkg/predicate"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -24,10 +24,8 @@ var (
 		"The filename containing the YAML resources to apply")
 	recursive = flag.Bool("recursive", false,
 		"If filename is a directory, process all manifests recursively")
-	autoinstall = flag.Bool("install", false,
-		"Automatically creates an Install resource if none exist")
-	namespace = flag.String("namespace", "",
-		"Overrides namespace in manifest (env vars resolved in-container)")
+	installNs = flag.String("install-ns", "",
+		"The namespace in which to create an Install resource, if none exist")
 	log = logf.Log.WithName("controller_install")
 )
 
@@ -55,16 +53,15 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	}
 
 	// Watch for changes to primary resource Install
-	err = c.Watch(&source.Kind{Type: &eventingv1alpha1.Install{}}, &handler.EnqueueRequestForObject{})
+	err = c.Watch(&source.Kind{Type: &eventingv1alpha1.Install{}}, &handler.EnqueueRequestForObject{}, predicate.GenerationChangedPredicate{})
 	if err != nil {
 		return err
 	}
 
-	// Make an attempt to auto-create an Install CR
-	if *autoinstall {
-		ns, _ := k8sutil.GetWatchNamespace()
+	// Make an attempt to create an Install CR, if necessary
+	if len(*installNs) > 0 {
 		c, _ := client.New(mgr.GetConfig(), client.Options{})
-		go autoInstall(c, ns)
+		go autoInstall(c, *installNs)
 	}
 	return nil
 }
@@ -119,9 +116,8 @@ func (r *ReconcileInstall) Reconcile(request reconcile.Request) (reconcile.Resul
 func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
 	// Transform resources as appropriate
 	fns := []mf.Transformer{mf.InjectOwner(instance)}
-
-	if len(*namespace) > 0 {
-		fns = append(fns, mf.InjectNamespace(*namespace))
+	if len(instance.Spec.Namespace) > 0 {
+		fns = append(fns, mf.InjectNamespace(instance.Spec.Namespace))
 	}
 	r.config.Transform(fns...)
 

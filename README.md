@@ -93,6 +93,7 @@ some post-editing of the file it generates may be required:
 
 * Add fields to address any warnings it reports
 * Verify `description` and `displayName` fields for all owned CRD's
+* Set the `fieldPath` for `WATCH_NAMESPACE` to `metadata.annotations['olm.targetNamespaces']`
 
 The [catalog.sh](hack/catalog.sh) script should yield a valid
 `CatalogSource` for you to publish.
