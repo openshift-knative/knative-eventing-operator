@@ -25,6 +25,40 @@ spec:
       displayName: Knative Eventing
       kind: Install
       name: installs.eventing.knative.dev
+      resources:
+      - kind: Namespace
+        name: ""
+        version: v1
+      - kind: CustomResourceDefinition
+        name: ""
+        version: v1beta1
+      - kind: Service
+        name: ""
+        version: v1
+      - kind: Deployment
+        name: ""
+        version: v1
+      - kind: Pod
+        name: ""
+        version: v1
+      - kind: ConfigMap
+        name: ""
+        version: v1
+      specDescriptors:
+      - description: The target namespace into which Knative Eventing will be installed
+        displayName: Namespace
+        path: namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:namespaceSelector
+      statusDescriptors:
+      - description: The actual Knative Eventing resources installed by the operator
+        displayName: Resources
+        path: resources
+      - description: The version of Knative Eventing installed
+        displayName: Version
+        path: version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:label
       version: v1alpha1
   description: |
     Knative Eventing is designed to address a common need for cloud
