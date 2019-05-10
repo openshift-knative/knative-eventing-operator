@@ -9,6 +9,7 @@ import (
 	"github.com/openshift-knative/knative-eventing-operator/version"
 	"github.com/operator-framework/operator-sdk/pkg/predicate"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -115,7 +116,7 @@ func (r *ReconcileInstall) Reconcile(request reconcile.Request) (reconcile.Resul
 // Apply the embedded resources
 func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
 	// Transform resources as appropriate
-	fns := []mf.Transformer{mf.InjectOwner(instance)}
+	fns := []mf.Transformer{mf.InjectOwner(instance), addSCCforSpecialClusterRoles}
 	if len(instance.Spec.Namespace) > 0 {
 		fns = append(fns, mf.InjectNamespace(instance.Spec.Namespace))
 	}
@@ -160,4 +161,37 @@ func autoInstall(c client.Client, ns string) (err error) {
 		log.Info("Install found", "name", installList.Items[0].Name)
 	}
 	return err
+}
+
+func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) *unstructured.Unstructured {
+
+	// these do need some openshift specific SCC
+	clusterRoles := []string{
+		"eventing-broker-filter",
+		"knative-eventing-controller",
+		"in-memory-channel-controller",
+		"in-memory-channel-dispatcher",
+	}
+
+	matchesClusterRole := func(cr string) bool {
+		for _, i := range clusterRoles {
+			if cr == i {
+				return true
+			}
+		}
+		return false
+	}
+
+	// massage the roles that require SCC
+	if u.GetKind() == "ClusterRole" && matchesClusterRole(u.GetName()) {
+		field, _, _ := unstructured.NestedFieldNoCopy(u.Object, "rules")
+		// Required to properly run in OpenShift
+		unstructured.SetNestedField(u.Object, append(field.([]interface{}), map[string]interface{}{
+			"apiGroups":     []interface{}{"security.openshift.io"},
+			"verbs":         []interface{}{"use"},
+			"resources":     []interface{}{"securitycontextconstraints"},
+			"resourceNames": []interface{}{"privileged", "anyuid"},
+		}), "rules")
+	}
+	return u
 }
