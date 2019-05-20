@@ -3,8 +3,6 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: knative-eventing
-  labels:
-    istio-injection: enabled
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -83,15 +81,6 @@ rules:
       - "get"
       - "list"
       - "watch"
-  - apiGroups:
-      - security.openshift.io
-    resourceNames:
-      - privileged
-      - anyuid
-    resources:
-      - securitycontextconstraints
-    verbs:
-      - use
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -107,28 +96,7 @@ rules:
       - "services"
       - "events"
       - "serviceaccounts"
-    verbs:
-      - "get"
-      - "list"
-      - "create"
-      - "update"
-      - "delete"
-      - "patch"
-      - "watch"
-  - apiGroups:
-      - security.openshift.io
-    resourceNames:
-      - privileged
-      - anyuid
-    resources:
-      - securitycontextconstraints
-    verbs:
-      - use
-  - apiGroups:
-      - "networking.istio.io"
-    resources:
-      - "virtualservices"
-    verbs:
+    verbs: &everything
       - "get"
       - "list"
       - "create"
@@ -140,26 +108,12 @@ rules:
       - "apps"
     resources:
       - "deployments"
-    verbs:
-      - "get"
-      - "list"
-      - "create"
-      - "update"
-      - "delete"
-      - "patch"
-      - "watch"
+    verbs: *everything
   - apiGroups:
       - "rbac.authorization.k8s.io"
     resources:
       - "rolebindings"
-    verbs:
-      - "get"
-      - "list"
-      - "create"
-      - "update"
-      - "delete"
-      - "patch"
-      - "watch"
+    verbs: *everything
   - apiGroups:
       - "eventing.knative.dev"
     resources:
@@ -173,14 +127,9 @@ rules:
       - "subscriptions/status"
       - "triggers"
       - "triggers/status"
-    verbs:
-      - "get"
-      - "list"
-      - "create"
-      - "update"
-      - "delete"
-      - "patch"
-      - "watch"
+      - "eventtypes"
+      - "eventtypes/status"
+    verbs: *everything
   - apiGroups:
       - "eventing.knative.dev"
     resources:
@@ -188,6 +137,19 @@ rules:
       - "triggers/finalizers"
     verbs:
       - "update"
+  - apiGroups:
+      - "sources.eventing.knative.dev"
+    resources:
+      - "cronjobsources"
+      - "cronjobsources/status"
+      - "cronjobsources/finalizers"
+      - "containersources"
+      - "containersources/status"
+      - "containersources/finalizers"
+      - "apiserversources"
+      - "apiserversources/status"
+      - "apiserversources/finalizers"
+    verbs: *everything
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -225,20 +187,19 @@ rules:
       - "apps"
     resources:
       - "deployments"
-      - "deployments/finalizers"
     verbs:
       - "get"
-      - "list"
-      - "create"
-      - "update"
-      - "delete"
-      - "patch"
-      - "watch"
+  - apiGroups:
+      - "apps"
+    resources:
+      - "deployments/finalizers"
+    verbs:
+      - update
   - apiGroups:
       - "admissionregistration.k8s.io"
     resources:
       - "mutatingwebhookconfigurations"
-    verbs:
+    verbs: 
       - "get"
       - "list"
       - "create"
@@ -259,6 +220,8 @@ rules:
       - "subscriptions/status"
       - "triggers"
       - "triggers/status"
+      - "eventtypes"
+      - "eventtypes/status"
     verbs:
       - "get"
       - "list"
@@ -302,6 +265,91 @@ roleRef:
   kind: ClusterRole
   name: knative-eventing-webhook
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  labels:
+    eventing.knative.dev/source: "true"
+    knative.dev/crd-install: "true"
+  name: apiserversources.sources.eventing.knative.dev
+spec:
+  group: sources.eventing.knative.dev
+  names:
+    categories:
+    - all
+    - knative
+    - eventing
+    - sources
+    kind: ApiServerSource
+    plural: apiserversources
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            serviceAccountName:
+              type: string
+              description: "name of the ServiceAccount to use to run the receive adapter. More info: https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/."
+            sink:
+              type: object
+              description: "A reference to the object that should receive events."
+            mode:
+              type: string
+              description: "Mode controls the content of the event payload. One of: 'Ref' (only references of resources), 'Resource' (full resource)."
+            resources:
+              items:
+                properties:
+                  apiVersion:
+                    type: string
+                    description: "API version of the objects to watch."
+                  kind:
+                    type: string
+                    description: "Kind of the objects to watch."
+                  controller:
+                    type: boolean
+                    description: "If true, emits the managing controller ref. Only supported for mode=Ref. More info: https://kubernetes.io/docs/concepts/workloads/controllers/garbage-collection/"
+              type: array
+          required:
+          - resources
+          - sink
+          type: object
+        status:
+          properties:
+            conditions:
+              items:
+                properties:
+                  lastTransitionTime:
+                    type: string
+                  message:
+                    type: string
+                  reason:
+                    type: string
+                  severity:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - type
+                - status
+                type: object
+              type: array
+            sinkUri:
+              type: string
+          type: object
+  version: v1alpha1
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -427,7 +475,7 @@ spec:
                   type: array
                   items:
                     required:
-                      - ref
+                      - uid
                     properties:
                       ref:
                         type: object
@@ -449,6 +497,9 @@ spec:
                           uid:
                             type: string
                             minLength: 1
+                      uid:
+                        type: string
+                        minLength: 1
                       subscriberURI:
                         type: string
                         minLength: 1
@@ -489,6 +540,190 @@ spec:
     - name: Age
       type: date
       JSONPath: .metadata.creationTimestamp
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    eventing.knative.dev/source: "true"
+    knative.dev/crd-install: "true"
+  name: containersources.sources.eventing.knative.dev
+spec:
+  group: sources.eventing.knative.dev
+  names:
+    categories:
+    - all
+    - knative
+    - eventing
+    - sources
+    kind: ContainerSource
+    plural: containersources
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            args:
+              items:
+                type: string
+              type: array
+            env:
+              items:
+                type: object
+              type: array
+            image:
+              minLength: 1
+              type: string
+            serviceAccountName:
+              type: string
+            sink:
+              type: object
+          type: object
+        status:
+          properties:
+            conditions:
+              items:
+                properties:
+                  lastTransitionTime:
+                    type: string
+                  message:
+                    type: string
+                  reason:
+                    type: string
+                  severity:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - type
+                - status
+                type: object
+              type: array
+            sinkUri:
+              type: string
+          type: object
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    eventing.knative.dev/source: "true"
+    knative.dev/crd-install: "true"
+  name: cronjobsources.sources.eventing.knative.dev
+spec:
+  group: sources.eventing.knative.dev
+  names:
+    categories:
+    - all
+    - knative
+    - eventing
+    - sources
+    kind: CronJobSource
+    plural: cronjobsources
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        spec:
+          properties:
+            data:
+              type: string
+            schedule:
+              type: string
+            serviceAccountName:
+              type: string
+            sink:
+              type: object
+          required:
+          - schedule
+          type: object
+        status:
+          properties:
+            conditions:
+              items:
+                properties:
+                  lastTransitionTime:
+                    type: string
+                  message:
+                    type: string
+                  reason:
+                    type: string
+                  severity:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - type
+                - status
+                type: object
+              type: array
+            sinkUri:
+              type: string
+          type: object
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: eventtypes.eventing.knative.dev
+spec:
+  group: eventing.knative.dev
+  version: v1alpha1
+  names:
+    kind: EventType
+    plural: eventtypes
+    singular: eventtype
+    categories:
+      - all
+      - knative
+      - eventing
+  scope: Namespaced
+  subresources:
+    status: {}
+  additionalPrinterColumns:
+    - name: Type
+      type: string
+      JSONPath: ".spec.type"
+    - name: Source
+      type: string
+      JSONPath: ".spec.source"
+    - name: Schema
+      type: string
+      JSONPath: ".spec.schema"
+    - name: Broker
+      type: string
+      JSONPath: ".spec.broker"
+    - name: Description
+      type: string
+      JSONPath: ".spec.description"
+    - name: Ready
+      type: string
+      JSONPath: ".status.conditions[?(@.type==\"Ready\")].status"
+    - name: Reason
+      type: string
+      JSONPath: ".status.conditions[?(@.type==\"Ready\")].reason"
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -692,6 +927,22 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    app: sources-controller
+    serving.knative.dev/release: devel
+  name: sources-controller
+  namespace: knative-eventing
+spec:
+  ports:
+    - name: metrics
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    app: sources-controller---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
     role: webhook
   name: webhook
   namespace: knative-eventing
@@ -707,24 +958,24 @@ kind: Deployment
 metadata:
   name: eventing-controller
   namespace: knative-eventing
+  labels:
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
-    matchLabels: &labels
+    matchLabels:
       app: eventing-controller
   template:
     metadata:
-      labels: *labels
+      labels:
+        app: eventing-controller
+        eventing.knative.dev/release: devel
     spec:
       serviceAccountName: eventing-controller
       containers:
       - name: eventing-controller
         terminationMessagePolicy: FallbackToLogsOnError
-        image: quay.io/openshift-knative/knative-eventing-controller:v0.5.0
-        args: [
-          "-logtostderr",
-          "-stderrthreshold", "INFO"
-        ]
+        image: quay.io/openshift-knative/knative-eventing-controller:v0.6.0
         env:
           - name: SYSTEM_NAMESPACE
             valueFrom:
@@ -733,11 +984,11 @@ spec:
           - name: CONFIG_LOGGING_NAME
             value: config-logging
           - name: BROKER_INGRESS_IMAGE
-            value: quay.io/openshift-knative/knative-eventing-ingress:v0.5.0
+            value: quay.io/openshift-knative/knative-eventing-ingress:v0.6.0
           - name: BROKER_INGRESS_SERVICE_ACCOUNT
             value: default
           - name: BROKER_FILTER_IMAGE
-            value: quay.io/openshift-knative/knative-eventing-filter:v0.5.0
+            value: quay.io/openshift-knative/knative-eventing-filter:v0.6.0
           - name: BROKER_FILTER_SERVICE_ACCOUNT
             value: eventing-broker-filter
         ports:
@@ -749,6 +1000,59 @@ spec:
         volumeMounts:
           - name: config-logging
             mountPath: /etc/config-logging
+      volumes:
+        - name: config-logging
+          configMap:
+            name: config-logging
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sources-controller
+  namespace: knative-eventing
+  labels:
+    eventing.knative.dev/release: devel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sources-controller
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: sources-controller
+        eventing.knative.dev/release: devel
+    spec:
+      serviceAccountName: eventing-controller
+      containers:
+      - name: controller
+        image: quay.io/openshift-knative/knative-eventing-sources-controller:v0.6.0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
+        ports:
+          - name: metrics
+            containerPort: 9090
+        volumeMounts:
+          - name: config-logging
+            mountPath: /etc/config-logging
+        env:
+          - name: SYSTEM_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: CONFIG_LOGGING_NAME
+            value: config-logging
+          - name: CRONJOB_RA_IMAGE
+            value: quay.io/openshift-knative/knative-eventing-cronjob-receive-adapter:v0.6.0
+          - name: APISERVER_RA_IMAGE
+            value: quay.io/openshift-knative/knative-eventing-apiserver-receive-adapter:v0.6.0
       volumes:
         - name: config-logging
           configMap:
@@ -775,7 +1079,7 @@ spec:
       containers:
       - name: webhook
         terminationMessagePolicy: FallbackToLogsOnError
-        image: quay.io/openshift-knative/knative-eventing-webhook:v0.5.0
+        image: quay.io/openshift-knative/knative-eventing-webhook:v0.6.0
         volumeMounts:
         - name: config-logging
           mountPath: /etc/config-logging
@@ -826,6 +1130,76 @@ data:
   loglevel.controller: "info"
   loglevel.webhook: "info"
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-observability
+  namespace: knative-eventing
+  labels:
+    eventing.knative.dev/release: devel
+data:
+  _example: |
+    logging.enable-var-log-collection: false
+    logging.fluentd-sidecar-image: k8s.gcr.io/fluentd-elasticsearch:v2.0.4
+    logging.fluentd-sidecar-output-config: |
+      <filter **>
+        @type parser
+        key_name log
+        <parse>
+          @type multi_format
+          <pattern>
+            format json
+            time_key fluentd-time # fluentd-time is reserved for structured logs
+            time_format %Y-%m-%dT%H:%M:%S.%NZ
+          </pattern>
+          <pattern>
+            format none
+            message_key log
+          </pattern>
+        </parse>
+      </filter>
+      <match **>
+        @id elasticsearch
+        @type elasticsearch
+        @log_level info
+        include_tag_key true
+        host elasticsearch-logging.knative-monitoring
+        port 9200
+        logstash_format true
+        <buffer>
+          @type file
+          path /var/log/fluentd-buffers/kubernetes.system.buffer
+          flush_mode interval
+          retry_type exponential_backoff
+          flush_thread_count 2
+          flush_interval 5s
+          retry_forever
+          retry_max_interval 30
+          chunk_limit_size 2M
+          queue_limit_length 8
+          overflow_action block
+        </buffer>
+      </match>
+    logging.revision-url-template: |
+      http://localhost:8001/api/v1/namespaces/knative-monitoring/services/kibana-logging/proxy/app/kibana#/discover?_a=(query:(match:(kubernetes.labels.knative-dev%2FrevisionUID:(query:'${REVISION_UID}',type:phrase))))
+    logging.request-log-template: '{"httpRequest": {"requestMethod": "{{.Request.Method}}", "requestUrl": "{{js .Request.RequestURI}}", "requestSize": "{{.Request.ContentLength}}", "status": {{.Response.Code}}, "responseSize": "{{.Response.Size}}", "userAgent": "{{js .Request.UserAgent}}", "remoteIp": "{{js .Request.RemoteAddr}}", "serverIp": "{{.Revision.PodIP}}", "referer": "{{js .Request.Referer}}", "latency": "{{.Response.Latency}}s", "protocol": "{{.Request.Proto}}"}, "traceId": "{{index .Request.Header "X-B3-Traceid"}}"}'
+    metrics.backend-destination: prometheus
+    metrics.request-metrics-backend-destination: prometheus
+    metrics.stackdriver-project-id: "<your stackdriver project id>"
+    metrics.allow-stackdriver-custom-metrics: "false"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-tracing
+  namespace: knative-eventing
+data:
+  _example: |
+    enable: "false"
+    zipkin-endpoint: "http://zipkin.istio-system.svc.cluster.local:9411/api/v2/spans"
+    debug: "false"
+    sample-rate: "0.1"
+---
 apiVersion: eventing.knative.dev/v1alpha1
 kind: ClusterChannelProvisioner
 metadata:
@@ -871,7 +1245,6 @@ rules:
   - apiGroups:
       - "" # Core API group.
     resources:
-      - configmaps
       - services
     verbs:
       - get
@@ -891,33 +1264,6 @@ rules:
     resources:
       - services
     verbs:
-      - update
-  - apiGroups:
-      - "" # Core API Group.
-    resources:
-      - configmaps
-    resourceNames:
-      - in-memory-channel-dispatcher-config-map
-    verbs:
-      - update
-  - apiGroups:
-      - security.openshift.io
-    resourceNames:
-      - privileged
-      - anyuid
-    resources:
-      - securitycontextconstraints
-    verbs:
-      - use
-  - apiGroups:
-      - networking.istio.io
-    resources:
-      - virtualservices
-    verbs:
-      - get
-      - list
-      - watch
-      - create
       - update
   - apiGroups:
       - "" # Core API Group.
@@ -959,7 +1305,7 @@ spec:
       serviceAccountName: in-memory-channel-controller
       containers:
         - name: controller
-          image: quay.io/openshift-knative/knative-eventing-in-memory-channel-controller:v0.5.0
+          image: quay.io/openshift-knative/knative-eventing-in-memory-channel-controller:v0.6.0
           env:
           - name: SYSTEM_NAMESPACE
             valueFrom:
@@ -978,22 +1324,14 @@ metadata:
   name: in-memory-channel-dispatcher
 rules:
   - apiGroups:
-      - "" # Core API group.
+      - "eventing.knative.dev"
     resources:
-      - configmaps
+      - "channels"
+      - "channels/status"
     verbs:
       - get
       - list
       - watch
-  - apiGroups:
-      - security.openshift.io
-    resourceNames:
-      - privileged
-      - anyuid
-    resources:
-      - securitycontextconstraints
-    verbs:
-      - use
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -1005,6 +1343,35 @@ subjects:
     namespace: knative-eventing
 roleRef:
   kind: ClusterRole
+  name: in-memory-channel-dispatcher
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: in-memory-channel-dispatcher
+  namespace: knative-eventing
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "configmaps"
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: in-memory-channel-dispatcher
+  namespace: knative-eventing
+subjects:
+  - kind: ServiceAccount
+    name: in-memory-channel-dispatcher
+    namespace: knative-eventing
+roleRef:
+  kind: Role
   name: in-memory-channel-dispatcher
   apiGroup: rbac.authorization.k8s.io
 ---
@@ -1021,28 +1388,14 @@ spec:
       role: dispatcher
   template:
     metadata:
-      annotations:
-        sidecar.istio.io/inject: "true"
       labels: *labels
     spec:
       serviceAccountName: in-memory-channel-dispatcher
       containers:
         - name: dispatcher
-          image: quay.io/openshift-knative/knative-eventing-fanoutsidecar:v0.5.0
-          args:
-            - --sidecar_port=8080
-            - --config_map_noticer=watcher
-            - --config_map_name=in-memory-channel-dispatcher-config-map
+          image: quay.io/openshift-knative/knative-eventing-in-memory-channel-dispatcher:v0.6.0
           env:
           - name: SYSTEM_NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: in-memory-channel-dispatcher-config-map
-  namespace: knative-eventing
-data:
-  multiChannelFanoutConfig: '{}'
