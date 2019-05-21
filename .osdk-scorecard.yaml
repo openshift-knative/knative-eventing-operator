@@ -1,3 +1,3 @@
 cr-manifest: "deploy/crds/eventing_v1alpha1_install_cr.yaml"
 init-timeout: 120
-csv-path: "deploy/olm-catalog/knative-eventing-operator/0.5.0/knative-eventing-operator.v0.5.0.clusterserviceversion.yaml"
+csv-path: "deploy/olm-catalog/knative-eventing-operator/0.6.0/knative-eventing-operator.v0.6.0.clusterserviceversion.yaml"
