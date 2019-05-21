@@ -8,6 +8,8 @@ import (
 	eventingv1alpha1 "github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1"
 	"github.com/openshift-knative/knative-eventing-operator/version"
 	"github.com/operator-framework/operator-sdk/pkg/predicate"
+	appsv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -25,8 +27,6 @@ var (
 		"The filename containing the YAML resources to apply")
 	recursive = flag.Bool("recursive", false,
 		"If filename is a directory, process all manifests recursively")
-	installNs = flag.String("install-ns", "",
-		"The namespace in which to create an Install resource, if none exist")
 	log = logf.Log.WithName("controller_install")
 )
 
@@ -59,11 +59,15 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 		return err
 	}
 
-	// Make an attempt to create an Install CR, if necessary
-	if len(*installNs) > 0 {
-		c, _ := client.New(mgr.GetConfig(), client.Options{})
-		go autoInstall(c, *installNs)
+	// Watch child deployments for availability
+	err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &eventingv1alpha1.Install{},
+	})
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
 
@@ -101,7 +105,9 @@ func (r *ReconcileInstall) Reconcile(request reconcile.Request) (reconcile.Resul
 
 	// stages hook for future work (e.g. deleteObsoleteResources)
 	stages := []func(*eventingv1alpha1.Install) error{
+		r.initStatus,
 		r.install,
+		r.checkDeployments,
 	}
 
 	for _, stage := range stages {
@@ -113,54 +119,88 @@ func (r *ReconcileInstall) Reconcile(request reconcile.Request) (reconcile.Resul
 	return reconcile.Result{}, nil
 }
 
-// Apply the embedded resources
-func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
-	// Transform resources as appropriate
-	fns := []mf.Transformer{mf.InjectOwner(instance), addSCCforSpecialClusterRoles}
-	if len(instance.Spec.Namespace) > 0 {
-		fns = append(fns, mf.InjectNamespace(instance.Spec.Namespace))
+// Initialize status conditions
+func (r *ReconcileInstall) initStatus(instance *eventingv1alpha1.Install) error {
+	if len(instance.Status.Conditions) == 0 {
+		instance.Status.InitializeConditions()
+		if err := r.updateStatus(instance); err != nil {
+			return err
+		}
 	}
-	r.config.Transform(fns...)
+	return nil
+}
 
-	if instance.Status.Version == version.Version {
-		// we've already successfully applied our YAML
-		return nil
-	}
-	// Apply the resources in the YAML file
-	if err := r.config.ApplyAll(); err != nil {
-		return err
-	}
+// Update the status subresource
+func (r *ReconcileInstall) updateStatus(instance *eventingv1alpha1.Install) error {
 
-	// Update status
-	instance.Status.Resources = r.config.Resources
-	instance.Status.Version = version.Version
+	// Account for https://github.com/kubernetes-sigs/controller-runtime/issues/406
+	gvk := instance.GroupVersionKind()
+	defer instance.SetGroupVersionKind(gvk)
+
 	if err := r.client.Status().Update(context.TODO(), instance); err != nil {
 		return err
 	}
 	return nil
 }
 
-func autoInstall(c client.Client, ns string) (err error) {
-	const path = "deploy/crds/eventing_v1alpha1_install_cr.yaml"
-	log.Info("Automatic Install requested", "namespace", ns)
-	installList := &eventingv1alpha1.InstallList{}
-	err = c.List(context.TODO(), &client.ListOptions{Namespace: ns}, installList)
-	if err != nil {
-		log.Error(err, "Unable to list Installs")
+// Apply the embedded resources
+func (r *ReconcileInstall) install(instance *eventingv1alpha1.Install) error {
+	// Transform resources as appropriate
+	fns := []mf.Transformer{
+		mf.InjectOwner(instance),
+		mf.InjectNamespace(instance.GetNamespace()),
+		addSCCforSpecialClusterRoles,
+	}
+	r.config.Transform(fns...)
+
+	if instance.Status.IsDeploying() {
+		return nil
+	}
+	defer r.updateStatus(instance)
+
+	// Apply the resources in the YAML file
+	if err := r.config.ApplyAll(); err != nil {
+		instance.Status.MarkInstallFailed(err.Error())
 		return err
 	}
-	if len(installList.Items) == 0 {
-		if manifest, err := mf.NewManifest(path, false, c); err == nil {
-			if err = manifest.Transform(mf.InjectNamespace(ns)).ApplyAll(); err != nil {
-				log.Error(err, "Unable to create Install")
+
+	// Update status
+	instance.Status.Version = version.Version
+	instance.Status.MarkInstallSucceeded()
+	return nil
+}
+
+// Check for all deployments available
+// TODO: what about statefulsets?
+func (r *ReconcileInstall) checkDeployments(instance *eventingv1alpha1.Install) error {
+	defer r.updateStatus(instance)
+	available := func(d *appsv1.Deployment) bool {
+		for _, c := range d.Status.Conditions {
+			if c.Type == appsv1.DeploymentAvailable && c.Status == v1.ConditionTrue {
+				return true
 			}
-		} else {
-			log.Error(err, "Unable to create Install manifest")
 		}
-	} else {
-		log.Info("Install found", "name", installList.Items[0].Name)
+		return false
 	}
-	return err
+	deployment := &appsv1.Deployment{}
+	for _, u := range r.config.Resources {
+		if u.GetKind() == "Deployment" {
+			key := client.ObjectKey{Namespace: u.GetNamespace(), Name: u.GetName()}
+			if err := r.client.Get(context.TODO(), key, deployment); err != nil {
+				instance.Status.MarkDeploymentsNotReady()
+				if errors.IsNotFound(err) {
+					return nil
+				}
+				return err
+			}
+			if !available(deployment) {
+				instance.Status.MarkDeploymentsNotReady()
+				return nil
+			}
+		}
+	}
+	instance.Status.MarkDeploymentsAvailable()
+	return nil
 }
 
 func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) *unstructured.Unstructured {

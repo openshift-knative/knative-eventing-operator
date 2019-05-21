@@ -67,15 +67,7 @@ func schema_pkg_apis_eventing_v1alpha1_InstallSpec(ref common.ReferenceCallback)
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
 				Description: "InstallSpec defines the desired state of Install",
-				Properties: map[string]spec.Schema{
-					"namespace": {
-						SchemaProps: spec.SchemaProps{
-							Description: "The target namespace in which to install the upstream resources",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-				},
+				Properties:  map[string]spec.Schema{},
 			},
 		},
 		Dependencies: []string{},
@@ -88,19 +80,6 @@ func schema_pkg_apis_eventing_v1alpha1_InstallStatus(ref common.ReferenceCallbac
 			SchemaProps: spec.SchemaProps{
 				Description: "InstallStatus defines the observed state of Install",
 				Properties: map[string]spec.Schema{
-					"resources": {
-						SchemaProps: spec.SchemaProps{
-							Description: "The resources applied by the operator",
-							Type:        []string{"array"},
-							Items: &spec.SchemaOrArray{
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1/unstructured.Unstructured"),
-									},
-								},
-							},
-						},
-					},
 					"version": {
 						SchemaProps: spec.SchemaProps{
 							Description: "The version of the installed release",
@@ -108,11 +87,29 @@ func schema_pkg_apis_eventing_v1alpha1_InstallStatus(ref common.ReferenceCallbac
 							Format:      "",
 						},
 					},
+					"conditions": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-patch-merge-key": "type",
+								"x-kubernetes-patch-strategy":  "merge",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "The latest available observations of a resource's current state.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/knative/pkg/apis.Condition"),
+									},
+								},
+							},
+						},
+					},
 				},
-				Required: []string{"resources", "version"},
 			},
 		},
 		Dependencies: []string{
-			"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured.Unstructured"},
+			"github.com/knative/pkg/apis.Condition"},
 	}
 }

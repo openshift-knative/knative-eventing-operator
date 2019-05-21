@@ -2,7 +2,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
   annotations:
-    alm-examples: '[{"apiVersion":"eventing.knative.dev/v1alpha1","kind":"Install","metadata":{"name":"knative-eventing"},"spec":{"namespace":"default"}}]'
+    alm-examples: '[{"apiVersion":"eventing.knative.dev/v1alpha1","kind":"Install","metadata":{"name":"knative-eventing"},"spec":{}}]'
     capabilities: Basic Install
     categories: Networking,Integration & Delivery,Cloud Provider,Developer Tools
     certified: "false"
@@ -20,6 +20,12 @@ metadata:
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
+    required:
+    - description: Represents an installation of a particular version of Knative Serving
+      displayName: Knative Serving
+      kind: Install
+      name: installs.serving.knative.dev
+      version: v1alpha1
     owned:
     - description: Represents an installation of a particular version of Knative Eventing
       displayName: Knative Eventing
@@ -44,21 +50,10 @@ spec:
       - kind: ConfigMap
         name: ""
         version: v1
-      specDescriptors:
-      - description: The target namespace into which Knative Eventing will be installed
-        displayName: Namespace
-        path: namespace
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:namespaceSelector
       statusDescriptors:
-      - description: The actual Knative Eventing resources installed by the operator
-        displayName: Resources
-        path: resources
       - description: The version of Knative Eventing installed
         displayName: Version
         path: version
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:label
       version: v1alpha1
   description: |
     Knative Eventing is designed to address a common need for cloud
