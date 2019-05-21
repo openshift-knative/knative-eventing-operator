@@ -118,7 +118,7 @@ spec:
                       fieldPath: metadata.name
                 - name: OPERATOR_NAME
                   value: knative-eventing-operator
-                image: quay.io/openshift-knative/knative-eventing-operator:v0.5.0
+                image: quay.io/openshift-knative/knative-eventing-operator:v0.6.0
                 imagePullPolicy: Always
                 name: knative-eventing-operator
                 resources: {}
