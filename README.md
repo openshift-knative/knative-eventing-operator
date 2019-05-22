@@ -10,6 +10,10 @@ appropriately for your cluster in the `default` namespace:
 
 ## Prerequisites
 
+### Knative Serving
+
+The `Service` CRD from [Knative Serving](https://github.com/knative/serving) is required.
+
 ### Operator SDK
 
 This operator was created using the
