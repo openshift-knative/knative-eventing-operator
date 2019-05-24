@@ -1,3 +1,4 @@
+
 ---
 # eventing.yaml
 apiVersion: v1
@@ -994,15 +995,15 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    role: eventing-webhook
-  name: eventing-webhook
+    role: webhook
+  name: webhook
   namespace: knative-eventing
 spec:
   ports:
   - port: 443
     targetPort: 8443
   selector:
-    role: eventing-webhook
+    role: webhook
 
 ---
 apiVersion: apps/v1
@@ -1115,21 +1116,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: eventing-webhook
+  name: webhook
   namespace: knative-eventing
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: eventing-webhook
-      role: eventing-webhook
+      app: webhook
+      role: webhook
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: "false"
       labels:
-        app: eventing-webhook
-        role: eventing-webhook
+        app: webhook
+        role: webhook
     spec:
       containers:
       - env:
@@ -1142,7 +1143,7 @@ spec:
         - name: WEBHOOK_NAME
           value: webhook
         image: gcr.io/knative-releases/github.com/knative/eventing/cmd/webhook@sha256:34a7cac96f8c809a7ce8ea0a86445204bbc6ac897525b876f53babb325f50bdc
-        name: eventing-webhook
+        name: webhook
         resources:
           limits:
             memory: 1000Mi
