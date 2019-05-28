@@ -203,7 +203,7 @@ func (r *ReconcileInstall) checkDeployments(instance *eventingv1alpha1.Install) 
 	return nil
 }
 
-func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) *unstructured.Unstructured {
+func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) error {
 
 	// these do need some openshift specific SCC
 	clusterRoles := []string{
@@ -238,5 +238,5 @@ func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) *unstructured.Un
 			"resourceNames": []interface{}{"privileged", "anyuid"},
 		}), "rules")
 	}
-	return u
+	return nil
 }

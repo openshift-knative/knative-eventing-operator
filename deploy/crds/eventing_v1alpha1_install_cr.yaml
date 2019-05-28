@@ -2,4 +2,3 @@ apiVersion: eventing.knative.dev/v1alpha1
 kind: Install
 metadata:
   name: knative-eventing
-spec: {}
