@@ -30,12 +30,12 @@ The following are all equivalent, but the latter may suffer from name
 conflicts.
 
     kubectl get knativeventings.eventing.knative.dev -oyaml
-    kubectl get kei -oyaml
+    kubectl get ke -oyaml
     kubectl get knativeventing -oyaml
 
 To uninstall Knative Eventing, simply delete the `KnativeEventing` resource.
 
-    kubectl delete kei --all
+    kubectl delete ke --all
     
 ## Development
 

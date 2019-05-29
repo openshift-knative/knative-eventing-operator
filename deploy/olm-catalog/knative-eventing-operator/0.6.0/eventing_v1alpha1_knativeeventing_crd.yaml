@@ -10,7 +10,7 @@ spec:
     plural: knativeeventings
     singular: knativeeventing
     shortNames:
-    - kei
+    - ke
   scope: Namespaced
   subresources:
     status: {}
