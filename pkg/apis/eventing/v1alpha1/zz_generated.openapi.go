@@ -13,17 +13,17 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.Install":       schema_pkg_apis_eventing_v1alpha1_Install(ref),
-		"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.InstallSpec":   schema_pkg_apis_eventing_v1alpha1_InstallSpec(ref),
-		"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.InstallStatus": schema_pkg_apis_eventing_v1alpha1_InstallStatus(ref),
+		"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.KnativeEventing":       schema_pkg_apis_eventing_v1alpha1_KnativeEventing(ref),
+		"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.KnativeEventingSpec":   schema_pkg_apis_eventing_v1alpha1_KnativeEventingSpec(ref),
+		"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.KnativeEventingStatus": schema_pkg_apis_eventing_v1alpha1_KnativeEventingStatus(ref),
 	}
 }
 
-func schema_pkg_apis_eventing_v1alpha1_Install(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_eventing_v1alpha1_KnativeEventing(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "Install is the Schema for the installs API",
+				Description: "KnativeEventing is the Schema for the knativeeventings API",
 				Properties: map[string]spec.Schema{
 					"kind": {
 						SchemaProps: spec.SchemaProps{
@@ -46,27 +46,27 @@ func schema_pkg_apis_eventing_v1alpha1_Install(ref common.ReferenceCallback) com
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.InstallSpec"),
+							Ref: ref("github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.KnativeEventingSpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.InstallStatus"),
+							Ref: ref("github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.KnativeEventingStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.InstallSpec", "github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.InstallStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.KnativeEventingSpec", "github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1.KnativeEventingStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_eventing_v1alpha1_InstallSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_eventing_v1alpha1_KnativeEventingSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "InstallSpec defines the desired state of Install",
+				Description: "KnativeEventingSpec defines the desired state of KnativeEventing",
 				Properties:  map[string]spec.Schema{},
 			},
 		},
@@ -74,15 +74,15 @@ func schema_pkg_apis_eventing_v1alpha1_InstallSpec(ref common.ReferenceCallback)
 	}
 }
 
-func schema_pkg_apis_eventing_v1alpha1_InstallStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_eventing_v1alpha1_KnativeEventingStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
-				Description: "InstallStatus defines the observed state of Install",
+				Description: "KnativeEventingStatus defines the observed state of KnativeEventing",
 				Properties: map[string]spec.Schema{
 					"version": {
 						SchemaProps: spec.SchemaProps{
-							Description: "The version of the installed release",
+							Description: "The version of the KnativeEventinged release",
 							Type:        []string{"string"},
 							Format:      "",
 						},
