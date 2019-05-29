@@ -165,5 +165,4 @@ spec:
   maturity: alpha
   provider:
     name: Knative Community
-  replaces: knative-eventing-operator.v0.5.0
   version: 0.6.0
