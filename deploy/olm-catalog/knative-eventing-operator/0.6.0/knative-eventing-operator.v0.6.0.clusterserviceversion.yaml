@@ -2,7 +2,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
   annotations:
-    alm-examples: '[{"apiVersion":"eventing.knative.dev/v1alpha1","kind":"Install","metadata":{"name":"knative-eventing"},"spec":{}}]'
+    alm-examples: '[{"apiVersion":"eventing.knative.dev/v1alpha1","kind":"KnativeEventing","metadata":{"name":"knative-eventing"},"spec":{}}]'
     capabilities: Basic Install
     categories: Networking,Integration & Delivery,Cloud Provider,Developer Tools
     certified: "false"
@@ -23,8 +23,8 @@ spec:
     owned:
     - description: Represents an installation of a particular version of Knative Eventing
       displayName: Knative Eventing
-      kind: Install
-      name: installs.eventing.knative.dev
+      kind: KnativeEventing
+      name: knativeeventings.eventing.knative.dev
       statusDescriptors:
       - description: The version of Knative Eventing installed
         displayName: Version

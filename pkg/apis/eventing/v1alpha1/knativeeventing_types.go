@@ -9,22 +9,22 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 const (
-	InstallSucceeded            apis.ConditionType = "InstallSucceeded"
-	InstallDeploymentsAvailable apis.ConditionType = "DeploymentsAvailable"
+	InstallSucceeded     apis.ConditionType = "InstallSucceeded"
+	DeploymentsAvailable apis.ConditionType = "DeploymentsAvailable"
 )
 
-// InstallSpec defines the desired state of Install
+// KnativeEventingSpec defines the desired state of KnativeEventing
 // +k8s:openapi-gen=true
-type InstallSpec struct {
+type KnativeEventingSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
 
 }
 
-// InstallStatus defines the observed state of Install
+// KnativeEventingStatus defines the observed state of KnativeEventing
 // +k8s:openapi-gen=true
-type InstallStatus struct {
+type KnativeEventingStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags:
@@ -42,25 +42,25 @@ type InstallStatus struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// Install is the Schema for the installs API
+// KnativeEventing is the Schema for the KnativeEventings API
 // +k8s:openapi-gen=true
-type Install struct {
+type KnativeEventing struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   InstallSpec   `json:"spec,omitempty"`
-	Status InstallStatus `json:"status,omitempty"`
+	Spec   KnativeEventingSpec   `json:"spec,omitempty"`
+	Status KnativeEventingStatus `json:"status,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// InstallList contains a list of Install
-type InstallList struct {
+// KnativeEventingList contains a list of KnativeEventing
+type KnativeEventingList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Install `json:"items"`
+	Items           []KnativeEventing `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Install{}, &InstallList{})
+	SchemeBuilder.Register(&KnativeEventing{}, &KnativeEventingList{})
 }

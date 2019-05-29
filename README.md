@@ -4,9 +4,9 @@ The following will install [Knative
 Eventing](https://github.com/knative/eventing) and configure it
 appropriately for your cluster in the `default` namespace:
 
-    kubectl apply -f deploy/crds/eventing_v1alpha1_install_crd.yaml
+    kubectl apply -f deploy/crds/eventing_v1alpha1_knativeventing_crd.yaml
     kubectl apply -f deploy/
-    kubectl apply -f deploy/crds/eventing_v1alpha1_install_cr.yaml
+    kubectl apply -f deploy/crds/eventing_v1alpha1_knativeventing_cr.yaml
 
 ## Prerequisites
 
@@ -20,20 +20,20 @@ This operator was created using the
 [operator-sdk](https://github.com/operator-framework/operator-sdk/).
 It's not strictly required but does provide some handy tooling.
 
-## The Install Custom Resource
+## The KnativeEventing Custom Resource
 
 The installation of Knative Eventing is triggered by the creation of
-[an `Install` custom
-resource](deploy/crds/eventing_v1alpha1_install_cr.yaml).
+[an `KnativeEventing` custom
+resource](deploy/crds/eventing_v1alpha1_knativeventing_cr.yaml).
 
 The following are all equivalent, but the latter may suffer from name
 conflicts.
 
-    kubectl get installs.eventing.knative.dev -oyaml
+    kubectl get knativeventings.eventing.knative.dev -oyaml
     kubectl get kei -oyaml
-    kubectl get install -oyaml
+    kubectl get knativeventing -oyaml
 
-To uninstall Knative Eventing, simply delete the `Install` resource.
+To uninstall Knative Eventing, simply delete the `KnativeEventing` resource.
 
     kubectl delete kei --all
     
@@ -149,7 +149,7 @@ spec:
   channel: alpha
 ---
 apiVersion: eventing.knative.dev/v1alpha1
-kind: Install
+kind: KnativeEventing
 metadata:
   name: knative-eventing
   namespace: knative-eventing
