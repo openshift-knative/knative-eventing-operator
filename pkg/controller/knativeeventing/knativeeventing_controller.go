@@ -227,7 +227,7 @@ func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) error {
 		return false
 	}
 
-	// massage the roles that require SCC
+	// massage the roles that require SCC on Openshift:
 	if u.GetKind() == "ClusterRole" && matchesClusterRole(u.GetName()) {
 		field, _, _ := unstructured.NestedFieldNoCopy(u.Object, "rules")
 		// Required to properly run in OpenShift
@@ -238,5 +238,18 @@ func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) error {
 			"resourceNames": []interface{}{"privileged", "anyuid"},
 		}), "rules")
 	}
+
+	// fix the in-memory-channel-dispatcher to list configmaps
+	// see https://github.com/knative/eventing/issues/1333 for more
+	if u.GetKind() == "ClusterRole" && "in-memory-channel-dispatcher" == u.GetName() {
+		field, _, _ := unstructured.NestedFieldNoCopy(u.Object, "rules")
+		// Required to properly run in OpenShift
+		unstructured.SetNestedField(u.Object, append(field.([]interface{}), map[string]interface{}{
+			"apiGroups": []interface{}{""},
+			"verbs":     []interface{}{"get", "list", "watch"},
+			"resources": []interface{}{"configmaps"},
+		}), "rules")
+	}
+
 	return nil
 }
