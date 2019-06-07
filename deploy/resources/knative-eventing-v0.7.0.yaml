@@ -101,6 +101,17 @@ rules:
   - watch
 
 ---
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      duck.knative.dev/channelable: "true"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: channelable-manipulator
+rules: []
+
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -205,17 +216,6 @@ rules:
   - get
   - list
   - watch
-- apiGroups:
-  - messaging.knative.dev
-  resources:
-  - inmemorychannels
-  - inmemorychannels/status
-  verbs:
-  - get
-  - list
-  - watch
-  - update
-  - patch
 
 ---
 apiVersion: v1
@@ -317,6 +317,19 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: addressable-resolver
+subjects:
+- kind: ServiceAccount
+  name: eventing-controller
+  namespace: knative-eventing
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eventing-controller-manipulator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: channelable-manipulator
 subjects:
 - kind: ServiceAccount
   name: eventing-controller
@@ -547,6 +560,8 @@ spec:
                 subscribers:
                   items:
                     properties:
+                      generation:
+                        type: integer
                       ref:
                         properties:
                           apiVersion:
@@ -728,6 +743,23 @@ spec:
           properties:
             data:
               type: string
+            resources:
+              properties:
+                limits:
+                  properties:
+                    cpu:
+                      type: string
+                    memory:
+                      type: string
+                  type: object
+                requests:
+                  properties:
+                    cpu:
+                      type: string
+                    memory:
+                      type: string
+                  type: object
+              type: object
             schedule:
               type: string
             serviceAccountName:
@@ -1090,14 +1122,14 @@ spec:
         - name: CONFIG_LOGGING_NAME
           value: config-logging
         - name: BROKER_INGRESS_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/ingress@sha256:d6b60f85fd18074dd53b9b8f5f0be13cb400e436f5cafec826b4de40b2a351e4
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/ingress@sha256:68a69242685b62564bc8e81b4f494bb83c1773eb96f396a6a458121e8ff2e879
         - name: BROKER_INGRESS_SERVICE_ACCOUNT
           value: eventing-broker-ingress
         - name: BROKER_FILTER_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/filter@sha256:2906d1769e817b010c689c3653deca311f0ac30fad95da460c2305a150517f8a
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/filter@sha256:a57135cdf346cbf0b9a33400a29a4c971567a01fb4a019cf8aeff7f505500b46
         - name: BROKER_FILTER_SERVICE_ACCOUNT
           value: eventing-broker-filter
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/controller@sha256:61f0a5c902317985b2e3c5a8ab071687a1edc720716527a4d13448d74e71bf5b
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/controller@sha256:a03639696d326d0c02ae5bc13037f5da8a22b15842ab6871727124ad1bf4a51a
         name: eventing-controller
         ports:
         - containerPort: 9090
@@ -1145,10 +1177,10 @@ spec:
         - name: CONFIG_LOGGING_NAME
           value: config-logging
         - name: CRONJOB_RA_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/cronjob_receive_adapter@sha256:705830dbba761aea7b0c13cfb5f60d41db852151220414631c96557434447fce
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/cronjob_receive_adapter@sha256:f0452c0591848251b6ca501cd827b0532250f231bc4fe7873c8eaeb981b49d63
         - name: APISERVER_RA_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/apiserver_receive_adapter@sha256:ab79b9e879f9ee824566ca7cb768cb3c131d9aa3cd21cfe8d1ba98ed5f1097f6
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/sources_controller@sha256:284aa77b481ff5ffc520874939dbe43d464f3640b88e0966aa882c318ca29b14
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/apiserver_receive_adapter@sha256:a4e4a45a79a90de8493920dd8f5b8cc7021d0887492c4582e1b3b2878384a926
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/sources_controller@sha256:84fc497b0e67bfcedd8f8578bc0d853888024bfef6550b1091d9b641486045d9
         name: controller
         ports:
         - containerPort: 9090
@@ -1199,7 +1231,7 @@ spec:
           value: config-logging
         - name: WEBHOOK_NAME
           value: eventing-webhook
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:5e81b96f96cef0ba9a24f46fb0ca09fba7ff4c9658c51364516f728c246993f4
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:8292ac23e75c8c925c285fc2d0f6fc280360dfb8a560d94d03e36186adf22136
         name: eventing-webhook
         resources:
           limits:
@@ -1243,7 +1275,7 @@ spec:
           value: config-logging
         - name: WEBHOOK_NAME
           value: webhook
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:5e81b96f96cef0ba9a24f46fb0ca09fba7ff4c9658c51364516f728c246993f4
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:8292ac23e75c8c925c285fc2d0f6fc280360dfb8a560d94d03e36186adf22136
         name: webhook
         resources:
           limits:
@@ -1467,6 +1499,26 @@ metadata:
 ---
 ---
 # in-memory-channel-crd.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    duck.knative.dev/channelable: "true"
+  name: imc-channelable-manipulator
+rules:
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels
+  - inmemorychannels/status
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -1715,7 +1767,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_controller@sha256:ef1f1aeb61c93da46773746375723bf28dc3533758b6b848f8459f44b41c8db2
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_controller@sha256:9df2eeb53e693aa528e45323333160823d91c2c6b098309aab0e6398c569bfca
         name: controller
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1752,7 +1804,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_dispatcher@sha256:6b6cbb3364ebb6ec9a56682d9e652bdcc8801a6c61548b9c7987224acbec96fc
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_dispatcher@sha256:9a204619bb26649ad919fe285a5a3dbe45fd35e7cc0f43256b9e547f977c4091
         name: dispatcher
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1862,7 +1914,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/controller@sha256:499e6a7b660031e887c355f8414b98f7bbc04b7ebd4445828817514c4505c0c7
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/controller@sha256:96c70932777f8b4eeae40010fe28a91905dc4bf89dfb94299b37166b40931caa
         name: controller
       serviceAccountName: in-memory-channel-controller
 ---
@@ -1960,7 +2012,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/dispatcher@sha256:a5407e3d65e78138f17aa6fbd553b6ef89f885dde8bd0e8566afb6b6e4dca6f1
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/dispatcher@sha256:31ed8b0c164fbde8f425baf10565ab22fd8ed37ad1c0fa9688946fad679d84af
         name: dispatcher
       serviceAccountName: in-memory-channel-dispatcher
 
