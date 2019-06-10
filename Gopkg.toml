@@ -60,7 +60,7 @@ required = [
   name = "github.com/operator-framework/operator-sdk"
   # The version rule is used for a specific release and the master branch for in between releases.
   # branch = "master" #osdk_branch_annotation
-  version = "=v0.7.0" #osdk_version_annotation
+  version = "=v0.8.0" #osdk_version_annotation
 
 [[constraint]]
   name = "github.com/jcrossley3/manifestival"
@@ -78,10 +78,6 @@ required = [
   [[prune.project]]
     name = "k8s.io/gengo"
     non-go = false
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/openshift/cluster-network-operator"
 
 [[constraint]]
   branch = "master"
