@@ -64,3 +64,10 @@ func (is *KnativeEventingStatus) MarkDeploymentsNotReady() {
 		"NotReady",
 		"Waiting on deployments")
 }
+
+func (is *KnativeEventingStatus) MarkIgnored(msg string) {
+	conditions.Manage(is).MarkFalse(
+		InstallSucceeded,
+		"Ignored",
+		"Install not attempted: %s", msg)
+}

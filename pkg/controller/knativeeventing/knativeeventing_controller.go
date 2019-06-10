@@ -3,6 +3,7 @@ package knativeeventing
 import (
 	"context"
 	"flag"
+	"fmt"
 
 	mf "github.com/jcrossley3/manifestival"
 	eventingv1alpha1 "github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1"
@@ -22,6 +23,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
+const (
+	operand = "knative-eventing"
+)
+
 var (
 	filename = flag.String("filename", "deploy/resources",
 		"The filename containing the YAML resources to apply")
@@ -33,16 +38,12 @@ var (
 // Add creates a new KnativeEventing Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
 func Add(mgr manager.Manager) error {
-	manifest, err := mf.NewManifest(*filename, *recursive, mgr.GetClient())
-	if err != nil {
-		return err
-	}
-	return add(mgr, newReconciler(mgr, manifest))
+	return add(mgr, newReconciler(mgr))
 }
 
 // newReconciler returns a new reconcile.Reconciler
-func newReconciler(mgr manager.Manager, man mf.Manifest) reconcile.Reconciler {
-	return &ReconcileKnativeEventing{client: mgr.GetClient(), scheme: mgr.GetScheme(), config: man}
+func newReconciler(mgr manager.Manager) reconcile.Reconciler {
+	return &ReconcileKnativeEventing{client: mgr.GetClient(), scheme: mgr.GetScheme()}
 }
 
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
@@ -82,6 +83,16 @@ type ReconcileKnativeEventing struct {
 	config mf.Manifest
 }
 
+// Create manifestival resources and KnativeEventing, if necessary
+func (r *ReconcileKnativeEventing) InjectClient(c client.Client) error {
+	m, err := mf.NewManifest(*filename, *recursive, c)
+	if err != nil {
+		return err
+	}
+	r.config = m
+	return r.ensureKnativeEventing()
+}
+
 // Reconcile reads that state of the cluster for a KnativeEventing object and makes changes based on the state read
 // and what is in the KnativeEventing.Spec
 // Note:
@@ -96,11 +107,18 @@ func (r *ReconcileKnativeEventing) Reconcile(request reconcile.Request) (reconci
 	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			r.config.DeleteAll()
+			if isInteresting(request) {
+				r.config.DeleteAll()
+			}
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
+	}
+
+	if !isInteresting(request) {
+		log.Info("Ignoring KnativeEventing", "namespace", instance.GetNamespace(), "name", instance.GetName())
+		return reconcile.Result{}, r.ignore(instance)
 	}
 
 	// stages hook for future work (e.g. deleteObsoleteResources)
@@ -166,6 +184,7 @@ func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEve
 
 	// Update status
 	instance.Status.Version = version.Version
+	log.Info("Install succeeded", "version", version.Version)
 	instance.Status.MarkInstallSucceeded()
 	return nil
 }
@@ -199,6 +218,7 @@ func (r *ReconcileKnativeEventing) checkDeployments(instance *eventingv1alpha1.K
 			}
 		}
 	}
+	log.Info("All deployments are available")
 	instance.Status.MarkDeploymentsAvailable()
 	return nil
 }
@@ -252,4 +272,43 @@ func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) error {
 	}
 
 	return nil
+}
+
+// Because it's effectively cluster-scoped, we only care about a
+// single, named resource: knative-eventing/knative-eventing
+func isInteresting(request reconcile.Request) bool {
+	return request.Namespace == operand && request.Name == operand
+}
+
+// Reflect our ignorance in the KnativeEventing status
+func (r *ReconcileKnativeEventing) ignore(instance *eventingv1alpha1.KnativeEventing) (err error) {
+	err = r.initStatus(instance)
+	if err == nil {
+		msg := fmt.Sprintf("The only KnativeEventing resource that matters is %s/%s", operand, operand)
+		instance.Status.MarkIgnored(msg)
+		err = r.updateStatus(instance)
+	}
+	return
+}
+
+// If we can't find knative-eventing/knative-eventing, create it
+func (r *ReconcileKnativeEventing) ensureKnativeEventing() (err error) {
+	const path = "deploy/crds/eventing_v1alpha1_knativeeventing_cr.yaml"
+	instance := &eventingv1alpha1.KnativeEventing{}
+	key := client.ObjectKey{Namespace: operand, Name: operand}
+	if err = r.client.Get(context.TODO(), key, instance); err != nil {
+		var manifest mf.Manifest
+		manifest, err = mf.NewManifest(path, false, r.client)
+		if err == nil {
+			// create namespace
+			err = manifest.Apply(&r.config.Resources[0])
+		}
+		if err == nil {
+			err = manifest.Transform(mf.InjectNamespace(operand))
+		}
+		if err == nil {
+			err = manifest.ApplyAll()
+		}
+	}
+	return
 }
