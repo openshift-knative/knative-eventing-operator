@@ -22,6 +22,22 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
+  name: service-addressable-resolver
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    duck.knative.dev/addressable: "true"
   name: serving-addressable-resolver
 rules:
 - apiGroups:
@@ -76,6 +92,14 @@ kind: ClusterRole
 metadata:
   name: eventing-broker-filter
 rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
 - apiGroups:
   - eventing.knative.dev
   resources:
@@ -188,6 +212,19 @@ rules:
   - triggers/finalizers
   verbs:
   - update
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - sequences
+  - sequences/status
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
 - apiGroups:
   - sources.eventing.knative.dev
   resources:
@@ -868,6 +905,94 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     knative.dev/crd-install: "true"
+  name: sequences.messaging.knative.dev
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.hostname
+    name: Hostname
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
+  group: messaging.knative.dev
+  names:
+    categories:
+    - all
+    - knative
+    - eventing
+    - messaging
+    kind: Sequence
+    plural: sequences
+    singular: sequence
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            channelTemplate:
+              properties:
+                apiVersion:
+                  minLength: 1
+                  type: string
+                kind:
+                  minLength: 1
+                  type: string
+                spec:
+                  type: object
+              required:
+              - apiVersion
+              - kind
+              type: object
+            steps:
+              items:
+                properties:
+                  dnsName:
+                    minLength: 1
+                    type: string
+                  ref:
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                      namespace:
+                        maxLength: 0
+                        type: string
+                    required:
+                    - apiVersion
+                    - kind
+                    - name
+                    type: object
+                  uri:
+                    minLength: 1
+                    type: string
+                type: object
+              type: array
+          required:
+          - steps
+          - channelTemplate
+  version: v1alpha1
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    knative.dev/crd-install: "true"
   name: subscriptions.eventing.knative.dev
 spec:
   additionalPrinterColumns:
@@ -1109,6 +1234,8 @@ spec:
       app: eventing-controller
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
       labels:
         app: eventing-controller
         eventing.knative.dev/release: devel
@@ -1121,22 +1248,23 @@ spec:
               fieldPath: metadata.namespace
         - name: CONFIG_LOGGING_NAME
           value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/eventing
         - name: BROKER_INGRESS_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/ingress@sha256:68a69242685b62564bc8e81b4f494bb83c1773eb96f396a6a458121e8ff2e879
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/ingress@sha256:48eaffba9e1d2a580a49ba763e462621fded338a925a5e061e7975197d339b1f
         - name: BROKER_INGRESS_SERVICE_ACCOUNT
           value: eventing-broker-ingress
         - name: BROKER_FILTER_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/filter@sha256:a57135cdf346cbf0b9a33400a29a4c971567a01fb4a019cf8aeff7f505500b46
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/filter@sha256:636ba0fd04c09b40972b85f830236539504d1ceb179f8310c91aabe71f6b70b7
         - name: BROKER_FILTER_SERVICE_ACCOUNT
           value: eventing-broker-filter
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/controller@sha256:a03639696d326d0c02ae5bc13037f5da8a22b15842ab6871727124ad1bf4a51a
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/controller@sha256:aa4c44e8ca4bd6dc99ac575a9217b4672f30da7d4c0da23b7986e584e7723083
         name: eventing-controller
         ports:
         - containerPort: 9090
           name: metrics
-        resources:
-          limits:
-            memory: 1000Mi
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1176,19 +1304,20 @@ spec:
               fieldPath: metadata.namespace
         - name: CONFIG_LOGGING_NAME
           value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/sources
         - name: CRONJOB_RA_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/cronjob_receive_adapter@sha256:f0452c0591848251b6ca501cd827b0532250f231bc4fe7873c8eaeb981b49d63
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/cronjob_receive_adapter@sha256:eda81ecac74c245d8195786d32ac2ee694d8d9077a0b0f479afb28905cad4658
         - name: APISERVER_RA_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/apiserver_receive_adapter@sha256:a4e4a45a79a90de8493920dd8f5b8cc7021d0887492c4582e1b3b2878384a926
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/sources_controller@sha256:84fc497b0e67bfcedd8f8578bc0d853888024bfef6550b1091d9b641486045d9
+          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/apiserver_receive_adapter@sha256:e7130c3e6c04252ef4a0a8a7958041904c5e2adcfca666e6a352f90f5ca65522
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/sources_controller@sha256:d612bb989f435bb63ccd8b6ca62edf3ed993cb692029bc5d1fed826b5b71aef2
         name: controller
         ports:
         - containerPort: 9090
           name: metrics
         resources:
-          limits:
-            cpu: 1000m
-            memory: 1000Mi
           requests:
             cpu: 100m
             memory: 100Mi
@@ -1231,11 +1360,8 @@ spec:
           value: config-logging
         - name: WEBHOOK_NAME
           value: eventing-webhook
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:8292ac23e75c8c925c285fc2d0f6fc280360dfb8a560d94d03e36186adf22136
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:49e6acf75fe6f797d30c800e2f482104dd0a87cb7d36066d73938ce227cae19b
         name: eventing-webhook
-        resources:
-          limits:
-            memory: 1000Mi
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1275,7 +1401,7 @@ spec:
           value: config-logging
         - name: WEBHOOK_NAME
           value: webhook
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:8292ac23e75c8c925c285fc2d0f6fc280360dfb8a560d94d03e36186adf22136
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:49e6acf75fe6f797d30c800e2f482104dd0a87cb7d36066d73938ce227cae19b
         name: webhook
         resources:
           limits:
@@ -1512,6 +1638,7 @@ rules:
   - inmemorychannels
   - inmemorychannels/status
   verbs:
+  - create
   - get
   - list
   - watch
@@ -1601,6 +1728,12 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels/status
+  verbs:
+  - update
 
 ---
 apiVersion: v1
@@ -1688,6 +1821,7 @@ spec:
     - all
     - knative
     - messaging
+    - channel
     kind: InMemoryChannel
     plural: inmemorychannels
     shortNames:
@@ -1745,6 +1879,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    eventing.knative.dev/release: devel
   name: imc-controller
   namespace: knative-eventing
 spec:
@@ -1763,11 +1899,15 @@ spec:
       - env:
         - name: CONFIG_LOGGING_NAME
           value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/inmemorychannel-controller
         - name: SYSTEM_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_controller@sha256:9df2eeb53e693aa528e45323333160823d91c2c6b098309aab0e6398c569bfca
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_controller@sha256:59a739180e813c1fb3b2f44acab9ffa4c58c1e4e152a9e8fb1abe49c49e2e43d
         name: controller
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1782,6 +1922,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    eventing.knative.dev/release: devel
   name: imc-dispatcher
   namespace: knative-eventing
 spec:
@@ -1800,11 +1942,15 @@ spec:
       - env:
         - name: CONFIG_LOGGING_NAME
           value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/inmemorychannel-dispatcher
         - name: SYSTEM_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_dispatcher@sha256:9a204619bb26649ad919fe285a5a3dbe45fd35e7cc0f43256b9e547f977c4091
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_dispatcher@sha256:622b28459fba1033977848c4b6eb229d95c5e8f8e6a9b765453105404add44ba
         name: dispatcher
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1914,7 +2060,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/controller@sha256:96c70932777f8b4eeae40010fe28a91905dc4bf89dfb94299b37166b40931caa
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/controller@sha256:8afcc2d46eebaee3ff546bff261ac23a5f7d460a5b71db58fa44a903df3061ff
         name: controller
       serviceAccountName: in-memory-channel-controller
 ---
@@ -2012,7 +2158,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/dispatcher@sha256:31ed8b0c164fbde8f425baf10565ab22fd8ed37ad1c0fa9688946fad679d84af
+        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/dispatcher@sha256:b8f39c3601edba63b4e2c00a45909b00a850d8c99dcdd5cd583399548a72ac16
         name: dispatcher
       serviceAccountName: in-memory-channel-dispatcher
 
