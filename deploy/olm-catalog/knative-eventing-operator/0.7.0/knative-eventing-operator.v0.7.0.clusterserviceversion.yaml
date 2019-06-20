@@ -146,9 +146,9 @@ spec:
         serviceAccountName: knative-eventing-operator
     strategy: deployment
   installModes:
-  - supported: true
+  - supported: false
     type: OwnNamespace
-  - supported: true
+  - supported: false
     type: SingleNamespace
   - supported: false
     type: MultiNamespace
@@ -157,6 +157,8 @@ spec:
   keywords:
   - serverless
   - eventing
+  - camel
+  - kafka
   links:
   - name: Website
     url: https://www.knative.dev/docs/eventing/
@@ -167,6 +169,6 @@ spec:
     name: Knative team
   maturity: alpha
   provider:
-    name: Red Hat
+    name: Knative Community
   replaces: knative-eventing-operator.v0.6.0
   version: 0.7.0
