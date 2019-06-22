@@ -1676,6 +1676,12 @@ rules:
   - watch
   - update
 - apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels/finalizers
+  verbs:
+  - update
+- apiGroups:
   - ""
   resources:
   - services
