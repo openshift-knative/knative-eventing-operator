@@ -4,6 +4,8 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: knative-eventing
 
 ---
@@ -14,6 +16,8 @@ aggregationRule:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: addressable-resolver
 rules: []
 ---
@@ -22,6 +26,7 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: v0.7.0
   name: service-addressable-resolver
 rules:
 - apiGroups:
@@ -38,6 +43,7 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: v0.7.0
   name: serving-addressable-resolver
 rules:
 - apiGroups:
@@ -57,6 +63,7 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: v0.7.0
   name: channel-addressable-resolver
 rules:
 - apiGroups:
@@ -74,6 +81,7 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: v0.7.0
   name: broker-addressable-resolver
 rules:
 - apiGroups:
@@ -90,6 +98,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-broker-filter
 rules:
 - apiGroups:
@@ -113,6 +123,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-broker-ingress
 rules:
 - apiGroups:
@@ -127,6 +139,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-config-reader
 rules:
 - apiGroups:
@@ -146,6 +160,8 @@ aggregationRule:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: channelable-manipulator
 rules: []
 
@@ -153,6 +169,8 @@ rules: []
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: knative-eventing-controller
 rules:
 - apiGroups:
@@ -272,12 +290,16 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-controller
   namespace: knative-eventing
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-webhook
   namespace: knative-eventing
 
@@ -285,6 +307,8 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: knative-eventing-webhook
 rules:
 - apiGroups:
@@ -350,6 +374,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -363,6 +389,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-controller-resolver
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -376,6 +404,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-controller-manipulator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -389,6 +419,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-webhook
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -405,6 +437,7 @@ kind: CustomResourceDefinition
 metadata:
   creationTimestamp: null
   labels:
+    eventing.knative.dev/release: v0.7.0
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: apiserversources.sources.eventing.knative.dev
@@ -493,6 +526,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
   name: brokers.eventing.knative.dev
 spec:
@@ -556,6 +590,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
   name: channels.eventing.knative.dev
 spec:
@@ -653,6 +688,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
   name: clusterchannelprovisioners.eventing.knative.dev
 spec:
@@ -688,6 +724,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: containersources.sources.eventing.knative.dev
@@ -765,6 +802,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: cronjobsources.sources.eventing.knative.dev
@@ -852,6 +890,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
   name: eventtypes.eventing.knative.dev
 spec:
@@ -918,6 +957,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
   name: sequences.messaging.knative.dev
 spec:
@@ -1006,6 +1046,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
   name: subscriptions.eventing.knative.dev
 spec:
@@ -1105,6 +1146,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
   name: triggers.eventing.knative.dev
 spec:
@@ -1206,7 +1248,7 @@ kind: Service
 metadata:
   labels:
     app: sources-controller
-    serving.knative.dev/release: devel
+    eventing.knative.dev/release: v0.7.0
   name: sources-controller
   namespace: knative-eventing
 spec:
@@ -1223,6 +1265,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     role: eventing-webhook
   name: eventing-webhook
   namespace: knative-eventing
@@ -1238,7 +1281,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: devel
+    eventing.knative.dev/release: v0.7.0
   name: eventing-controller
   namespace: knative-eventing
 spec:
@@ -1252,7 +1295,7 @@ spec:
         sidecar.istio.io/inject: "false"
       labels:
         app: eventing-controller
-        eventing.knative.dev/release: devel
+        eventing.knative.dev/release: v0.7.0
     spec:
       containers:
       - env:
@@ -1267,14 +1310,14 @@ spec:
         - name: METRICS_DOMAIN
           value: knative.dev/eventing
         - name: BROKER_INGRESS_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/ingress@sha256:e442a2c9fb410e7a45aa49a0993c4047f91a484a318a6367541aac9395b65194
+          value: gcr.io/knative-releases/github.com/knative/eventing/cmd/broker/ingress@sha256:33d41dc38208bf9752b38e5c90149da4d5af74a67f317b7da8cb3c458fbd0fff
         - name: BROKER_INGRESS_SERVICE_ACCOUNT
           value: eventing-broker-ingress
         - name: BROKER_FILTER_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/broker/filter@sha256:6ac2941ad76f5957b723598e0ffa549c0c2384d60712df0360143b523459e3f1
+          value: gcr.io/knative-releases/github.com/knative/eventing/cmd/broker/filter@sha256:5a4eb60a605e189516a36a01c7fd39001d5766b2e6bb80c69744e15515282360
         - name: BROKER_FILTER_SERVICE_ACCOUNT
           value: eventing-broker-filter
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/controller@sha256:27db02d7e9397bfb1347736220f5563bc756b2522695967b2fdd9764a55f969e
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/controller@sha256:57f273774efb017bbf06729af802514db2f3ab070b51730dba9330903aa34163
         name: eventing-controller
         ports:
         - containerPort: 9090
@@ -1294,7 +1337,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: devel
+    eventing.knative.dev/release: v0.7.0
   name: sources-controller
   namespace: knative-eventing
 spec:
@@ -1308,7 +1351,7 @@ spec:
         sidecar.istio.io/inject: "false"
       labels:
         app: sources-controller
-        eventing.knative.dev/release: devel
+        eventing.knative.dev/release: v0.7.0
     spec:
       containers:
       - env:
@@ -1323,10 +1366,10 @@ spec:
         - name: METRICS_DOMAIN
           value: knative.dev/sources
         - name: CRONJOB_RA_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/cronjob_receive_adapter@sha256:44863f54ddc3cb970bbb2f821a4b803c405a8ce7a0825dbc5c89a139b2de732e
+          value: gcr.io/knative-releases/github.com/knative/eventing/cmd/cronjob_receive_adapter@sha256:634fbf0348f9f10d09c8110c505173aed91ce747bb2b87605e6e1bb10dce270b
         - name: APISERVER_RA_IMAGE
-          value: gcr.io/knative-nightly/github.com/knative/eventing/cmd/apiserver_receive_adapter@sha256:ff0869ad9938cc54260e972fa29bfb69021a684cdbdd7eacb9ce23b6bae937fa
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/sources_controller@sha256:9ae2348c527440b791d5473845aff35f4e05b67b73eafbbedf629b44edd73c9e
+          value: gcr.io/knative-releases/github.com/knative/eventing/cmd/apiserver_receive_adapter@sha256:f18cdbc3c3077ece8505a4f4c49055e6c1c577e9fa42446f0f81193e48aa1d60
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/sources_controller@sha256:31ec2b4a1d1d9b81cd1eed6632b8a1c540b510b584e58c14ebc1c000330fe32c
         name: controller
         ports:
         - containerPort: 9090
@@ -1348,6 +1391,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: eventing-webhook
   namespace: knative-eventing
 spec:
@@ -1374,7 +1419,7 @@ spec:
           value: config-logging
         - name: WEBHOOK_NAME
           value: eventing-webhook
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:22d726e2a60ef0ec36c8cfe90a8e13e922f76afb592bd3ffddd1b31e0265f4ee
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/webhook@sha256:3b5de8074f00469c393910fd0fbac70cec10838a858c94ad755af1b6bd6712fd
         name: eventing-webhook
         terminationMessagePolicy: FallbackToLogsOnError
         volumeMounts:
@@ -1415,7 +1460,7 @@ spec:
           value: config-logging
         - name: WEBHOOK_NAME
           value: webhook
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/webhook@sha256:22d726e2a60ef0ec36c8cfe90a8e13e922f76afb592bd3ffddd1b31e0265f4ee
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/webhook@sha256:3b5de8074f00469c393910fd0fbac70cec10838a858c94ad755af1b6bd6712fd
         name: webhook
         resources:
           limits:
@@ -1595,8 +1640,6 @@ data:
     metrics.allow-stackdriver-custom-metrics: "false"
 kind: ConfigMap
 metadata:
-  labels:
-    eventing.knative.dev/release: devel
   name: config-observability
   namespace: knative-eventing
 
@@ -1644,6 +1687,7 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/channelable: "true"
+    eventing.knative.dev/release: v0.7.0
   name: imc-channelable-manipulator
 rules:
 - apiGroups:
@@ -1663,6 +1707,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: imc-controller
 rules:
 - apiGroups:
@@ -1729,6 +1775,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: imc-dispatcher
 rules:
 - apiGroups:
@@ -1760,6 +1808,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     messaging.knative.dev/channel: in-memory-channel
     messaging.knative.dev/role: dispatcher
   name: imc-dispatcher
@@ -1777,12 +1826,16 @@ spec:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: imc-controller
   namespace: knative-eventing
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: imc-dispatcher
   namespace: knative-eventing
 
@@ -1790,6 +1843,8 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: imc-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1803,6 +1858,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: imc-dispatcher
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1818,6 +1875,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    eventing.knative.dev/release: v0.7.0
     knative.dev/crd-install: "true"
     messaging.knative.dev/subscribable: "true"
   name: inmemorychannels.messaging.knative.dev
@@ -1900,7 +1958,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: devel
+    eventing.knative.dev/release: v0.7.0
   name: imc-controller
   namespace: knative-eventing
 spec:
@@ -1927,7 +1985,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_controller@sha256:31fa36d952ec29a5038a0534e568d6fd18875a7cc06c066710b37bf3468e58c9
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/in_memory/channel_controller@sha256:292b2dddf074ce355f5793f3d4893ad0863152e0783f32c05e7ae50328b1e2e6
         name: controller
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1943,7 +2001,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: devel
+    eventing.knative.dev/release: v0.7.0
   name: imc-dispatcher
   namespace: knative-eventing
 spec:
@@ -1970,7 +2028,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/channel_dispatcher@sha256:8e5fe50f2657cd574ccc6f091af9cb7a911d58d02148bbd9d20066f4eff97adc
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/in_memory/channel_dispatcher@sha256:0c95cafd668283cb045fa4941922ff7365f8e6caef623a9c5a68452be1404b5e
         name: dispatcher
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -1987,18 +2045,24 @@ spec:
 apiVersion: eventing.knative.dev/v1alpha1
 kind: ClusterChannelProvisioner
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory
 spec: {}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-controller
   namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-controller
 rules:
 - apiGroups:
@@ -2047,6 +2111,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -2060,6 +2126,8 @@ subjects:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-controller
   namespace: knative-eventing
 spec:
@@ -2080,19 +2148,23 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/controller@sha256:dfd7b2852c9bc2e391b04193a50a4f635db0e7a4bbd79a20c61199e6880394fe
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/in_memory/controller@sha256:dfd7b2852c9bc2e391b04193a50a4f635db0e7a4bbd79a20c61199e6880394fe
         name: controller
       serviceAccountName: in-memory-channel-controller
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-dispatcher
 rules:
 - apiGroups:
@@ -2116,6 +2188,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-dispatcher
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -2129,6 +2203,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
 rules:
@@ -2144,6 +2220,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
 roleRef:
@@ -2158,6 +2236,8 @@ subjects:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    eventing.knative.dev/release: v0.7.0
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
 spec:
@@ -2178,7 +2258,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: gcr.io/knative-nightly/github.com/knative/eventing/cmd/in_memory/dispatcher@sha256:94a94ea936f2d1a9f8909ee952d2a210a1a5e8e7b030553fd31665f6246cfd61
+        image: gcr.io/knative-releases/github.com/knative/eventing/cmd/in_memory/dispatcher@sha256:345888cb32ce69a45165e02fc87ebfde903fd1d9dfe059892289d66b779e6bee
         name: dispatcher
       serviceAccountName: in-memory-channel-dispatcher
 
