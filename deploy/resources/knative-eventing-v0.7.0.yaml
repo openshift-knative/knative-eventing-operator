@@ -258,6 +258,12 @@ rules:
   - patch
   - watch
 - apiGroups:
+  - messaging.knative.dev
+  resources:
+  - sequences/finalizers
+  verbs:
+  - update
+- apiGroups:
   - sources.eventing.knative.dev
   resources:
   - cronjobsources
