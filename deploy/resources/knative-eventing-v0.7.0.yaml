@@ -293,6 +293,17 @@ rules:
   - watch
 
 ---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: knative-eventing-namespaced-admin
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+rules:
+  - apiGroups: ["eventing.knative.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
