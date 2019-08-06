@@ -230,7 +230,6 @@ func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) error {
 		"addressable-resolver",
 		"broker-addressable-resolver",
 		"channel-addressable-resolver",
-		"eventing-broker-filter",
 		"in-memory-channel-controller",
 		"in-memory-channel-dispatcher",
 		"knative-eventing-controller",
