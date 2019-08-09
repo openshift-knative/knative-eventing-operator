@@ -4,14 +4,14 @@ kind: Namespace
 metadata:
   name: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: addressable-resolver
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 aggregationRule:
   clusterRoleSelectors:
   - matchLabels:
@@ -23,7 +23,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: service-addressable-resolver
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     duck.knative.dev/addressable: "true"
 rules:
 - apiGroups:
@@ -40,12 +40,12 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: serving-addressable-resolver
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     duck.knative.dev/addressable: "true"
 rules:
 - apiGroups:
   - serving.knative.dev
-  resources: 
+  resources:
   - routes
   - routes/status
   - services
@@ -60,11 +60,12 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: channel-addressable-resolver
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     duck.knative.dev/addressable: "true"
 rules:
 - apiGroups:
   - eventing.knative.dev
+  - messaging.knative.dev
   resources:
   - channels
   - channels/status
@@ -78,7 +79,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: broker-addressable-resolver
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     duck.knative.dev/addressable: "true"
 rules:
 - apiGroups:
@@ -91,12 +92,31 @@ rules:
   - list
   - watch
 ---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: messaging-addressable-resolver
+  labels:
+    eventing.knative.dev/release: devel
+    duck.knative.dev/addressable: "true"
+rules:
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - sequences
+  - sequences/status
+  - choices
+  - choices/status
+  verbs:
+  - get
+  - list
+  - watch---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: eventing-broker-filter
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - ""
@@ -121,7 +141,7 @@ kind: ClusterRole
 metadata:
   name: eventing-broker-ingress
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - ""
@@ -137,7 +157,7 @@ kind: ClusterRole
 metadata:
   name: eventing-config-reader
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - ""
@@ -153,19 +173,55 @@ kind: ClusterRole
 metadata:
   name: channelable-manipulator
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 aggregationRule:
   clusterRoleSelectors:
   - matchLabels:
       duck.knative.dev/channelable: "true"
 rules: [] # Rules are automatically filled in by the controller manager.
 ---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: knative-eventing-namespaced-admin
+  labels:
+    eventing.knative.dev/release: devel
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+rules:
+  - apiGroups: ["eventing.knative.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: knative-messaging-namespaced-admin
+  labels:
+    eventing.knative.dev/release: devel
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+rules:
+  - apiGroups: ["messaging.knative.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: knative-eventing-sources-namespaced-admin
+  labels:
+    eventing.knative.dev/release: devel
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+rules:
+  - apiGroups: ["sources.eventing.knative.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: knative-eventing-controller
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - ""
@@ -222,13 +278,77 @@ rules:
     resources:
       - "sequences"
       - "sequences/status"
+      - "channels"
+      - "channels/status"
+      - "choices"
+      - "choices/status"
     verbs: *everything
   - apiGroups:
       - "messaging.knative.dev"
     resources:
       - "sequences/finalizers"
+      - "choices/finalizers"
     verbs:
       - "update"
+  - apiGroups:
+      - "apiextensions.k8s.io"
+    resources:
+      - "customresourcedefinitions"
+    verbs:
+      - "get"
+      - "list"
+      - "watch"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eventing-controller
+  namespace: knative-eventing
+  labels:
+    eventing.knative.dev/release: devel
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eventing-webhook
+  namespace: knative-eventing
+  labels:
+    eventing.knative.dev/release: devel
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eventing-source-controller
+  namespace: knative-eventing
+  labels:
+    eventing.knative.dev/release: devel
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: knative-eventing-source-controller
+  labels:
+    eventing.knative.dev/release: devel
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "secrets"
+      - "configmaps"
+      - "services"
+    verbs: &everything
+      - "get"
+      - "list"
+      - "create"
+      - "update"
+      - "delete"
+      - "patch"
+      - "watch"
+  - apiGroups:
+      - "apps"
+    resources:
+      - "deployments"
+    verbs: *everything
   - apiGroups:
       - "sources.eventing.knative.dev"
     resources:
@@ -243,69 +363,27 @@ rules:
       - "apiserversources/finalizers"
     verbs: *everything
   - apiGroups:
-      - "apiextensions.k8s.io"
+      - serving.knative.dev
     resources:
-      - "customresourcedefinitions"
-    verbs:
-      - "get"
-      - "list"
-      - "watch"
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: knative-eventing-namespaced-admin
-  labels:
-    rbac.authorization.k8s.io/aggregate-to-admin: "true"
-rules:
-  - apiGroups: ["eventing.knative.dev"]
-    resources: ["*"]
-    verbs: ["*"]
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: knative-messaging-namespaced-admin
-  labels:
-    rbac.authorization.k8s.io/aggregate-to-admin: "true"
-rules:
-  - apiGroups: ["messaging.knative.dev"]
-    resources: ["*"]
-    verbs: ["*"]
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: knative-eventing-sources-namespaced-admin
-  labels:
-    rbac.authorization.k8s.io/aggregate-to-admin: "true"
-rules:
-  - apiGroups: ["sources.eventing.knative.dev"]
-    resources: ["*"]
-    verbs: ["*"]
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: eventing-controller
-  namespace: knative-eventing
-  labels:
-    eventing.knative.dev/release: "v0.7.1"
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: eventing-webhook
-  namespace: knative-eventing
-  labels:
-    eventing.knative.dev/release: "v0.7.1"
+      - services
+    verbs: *everything
+  - apiGroups:
+      - eventing.knative.dev
+    resources:
+      - eventtypes
+    verbs: *everything
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs: *everything
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: knative-eventing-webhook
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - ""
@@ -371,7 +449,7 @@ kind: ClusterRoleBinding
 metadata:
   name: eventing-controller
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: eventing-controller
@@ -386,7 +464,7 @@ kind: ClusterRoleBinding
 metadata:
   name: eventing-controller-resolver
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: eventing-controller
@@ -401,7 +479,7 @@ kind: ClusterRoleBinding
 metadata:
   name: eventing-controller-manipulator
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: eventing-controller
@@ -416,7 +494,7 @@ kind: ClusterRoleBinding
 metadata:
   name: eventing-webhook
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: eventing-webhook
@@ -426,12 +504,42 @@ roleRef:
   name: knative-eventing-webhook
   apiGroup: rbac.authorization.k8s.io
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eventing-source-controller
+  labels:
+    eventing.knative.dev/release: devel
+subjects:
+  - kind: ServiceAccount
+    name: eventing-source-controller
+    namespace: knative-eventing
+roleRef:
+  kind: ClusterRole
+  name: knative-eventing-source-controller
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eventing-source-controller-resolver
+  labels:
+    eventing.knative.dev/release: devel
+subjects:
+  - kind: ServiceAccount
+    name: eventing-source-controller
+    namespace: knative-eventing
+roleRef:
+  kind: ClusterRole
+  name: addressable-resolver
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   creationTimestamp: null
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: apiserversources.sources.eventing.knative.dev
@@ -443,6 +551,7 @@ spec:
     - knative
     - eventing
     - sources
+    - importers
     kind: ApiServerSource
     plural: apiserversources
   scope: Namespaced
@@ -451,12 +560,62 @@ spec:
   validation:
     openAPIV3Schema:
       properties:
-        apiVersion:
-          type: string
-        kind:
-          type: string
-        metadata:
+        registry:
           type: object
+          description: "Internal information, users should not set this property"
+          properties:
+            eventTypes:
+              type: object
+              description: "Event types that ApiServerSource can produce"
+              properties:
+                addResource:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      pattern: "dev.knative.apiserver.resource.add"
+                    schema:
+                      type: string
+                deleteResource:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      pattern: "dev.knative.apiserver.resource.delete"
+                    schema:
+                      type: string
+                updateResource:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      pattern: "dev.knative.apiserver.resource.update"
+                    schema:
+                      type: string
+                addRef:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      pattern: "dev.knative.apiserver.ref.add"
+                    schema:
+                      type: string
+                deleteRef:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      pattern: "dev.knative.apiserver.ref.delete"
+                    schema:
+                      type: string
+                updateRef:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      pattern: "dev.knative.apiserver.ref.update"
+                    schema:
+                      type: string
         spec:
           properties:
             serviceAccountName:
@@ -510,18 +669,24 @@ spec:
             sinkUri:
               type: string
           type: object
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: brokers.eventing.knative.dev
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
 spec:
   group: eventing.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: Broker
     plural: brokers
@@ -580,11 +745,14 @@ kind: CustomResourceDefinition
 metadata:
   name: channels.eventing.knative.dev
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
 spec:
   group: eventing.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: Channel
     plural: channels
@@ -675,13 +843,236 @@ spec:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
+  name: channels.messaging.knative.dev
+  labels:
+    eventing.knative.dev/release: devel
+    knative.dev/crd-install: "true"
+    messaging.knative.dev/subscribable: "true"
+spec:
+  group: messaging.knative.dev
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+  names:
+    kind: Channel
+    plural: channels
+    singular: channel
+    categories:
+      - all
+      - knative
+      - messaging
+      - channel
+    shortNames:
+      - ch
+  scope: Namespaced
+  subresources:
+    status: {}
+  additionalPrinterColumns:
+    - name: Ready
+      type: string
+      JSONPath: ".status.conditions[?(@.type==\"Ready\")].status"
+    - name: Reason
+      type: string
+      JSONPath: ".status.conditions[?(@.type==\"Ready\")].reason"
+    - name: URL
+      type: string
+      JSONPath: .status.address.url
+    - name: Age
+      type: date
+      JSONPath: .metadata.creationTimestamp
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            channelTemplate:
+              type: object
+              properties:
+                apiVersion:
+                  type: string
+                  minLength: 1
+                kind:
+                  type: string
+                  minLength: 1
+                spec:
+                  type: object
+              required:
+                - apiVersion
+                - kind
+            subscribable:
+              type: object
+              properties:
+                subscribers:
+                  type: array
+                  items:
+                    required:
+                      - uid
+                    properties:
+                      ref:
+                        type: object
+                        required:
+                          - namespace
+                          - name
+                          - uid
+                        properties:
+                          apiVersion:
+                            type: string
+                          kind:
+                            type: string
+                          name:
+                            type: string
+                            minLength: 1
+                          namespace:
+                            type: string
+                            minLength: 1
+                          uid:
+                            type: string
+                            minLength: 1
+                      uid:
+                        type: string
+                        minLength: 1
+                      subscriberURI:
+                        type: string
+                        minLength: 1
+                      replyURI:
+                        type: string
+                        minLength: 1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: choices.messaging.knative.dev
+  labels:
+    eventing.knative.dev/release: devel
+    knative.dev/crd-install: "true"
+spec:
+  group: messaging.knative.dev
+  version: v1alpha1
+  names:
+    kind: Choice
+    plural: choices
+    singular: choice
+    categories:
+    - all
+    - knative
+    - eventing
+    - messaging
+  scope: Namespaced
+  subresources:
+    status: {}
+  additionalPrinterColumns:
+    - name: Ready
+      type: string
+      JSONPath: ".status.conditions[?(@.type==\"Ready\")].status"
+    - name: Reason
+      type: string
+      JSONPath: ".status.conditions[?(@.type==\"Ready\")].reason"
+    - name: URL
+      type: string
+      JSONPath: .status.address.url
+    - name: Age
+      type: date
+      JSONPath: .metadata.creationTimestamp
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          required:
+            - cases
+            - channelTemplate
+          properties:
+            cases:
+              type: array
+              items:
+                type: object
+                required:
+                - subscriber
+                properties:
+                  filter:
+                    type: object
+                    properties:
+                      dnsName:
+                        type: string
+                        minLength: 1
+                      uri:
+                        type: string
+                        minLength: 1
+                      ref:
+                        type: object
+                        required:
+                          - apiVersion
+                          - kind
+                          - name
+                        properties:
+                          apiVersion:
+                            type: string
+                            minLength: 1
+                          kind:
+                            type: string
+                            minLength: 1
+                          name:
+                            type: string
+                            minLength: 1
+                          namespace:
+                            type: string
+                            maxLength: 0
+                  subscriber:
+                    type: object
+                    properties:
+                      dnsName:
+                        type: string
+                        minLength: 1
+                      uri:
+                        type: string
+                        minLength: 1
+                      ref:
+                        type: object
+                        required:
+                          - apiVersion
+                          - kind
+                          - name
+                        properties:
+                          apiVersion:
+                            type: string
+                            minLength: 1
+                          kind:
+                            type: string
+                            minLength: 1
+                          name:
+                            type: string
+                            minLength: 1
+                          namespace:
+                            type: string
+                            maxLength: 0
+            channelTemplate:
+              type: object
+              required:
+                - apiVersion
+                - kind
+              properties:
+                apiVersion:
+                  type: string
+                  minLength: 1
+                kind:
+                  type: string
+                  minLength: 1
+                spec:
+                  type: object
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
   name: clusterchannelprovisioners.eventing.knative.dev
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
 spec:
   group: eventing.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: ClusterChannelProvisioner
     plural: clusterchannelprovisioners
@@ -711,7 +1102,7 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: containersources.sources.eventing.knative.dev
@@ -723,6 +1114,7 @@ spec:
     - knative
     - eventing
     - sources
+    - importers
     kind: ContainerSource
     plural: containersources
   scope: Namespaced
@@ -782,13 +1174,16 @@ spec:
             sinkUri:
               type: string
           type: object
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: cronjobsources.sources.eventing.knative.dev
@@ -800,6 +1195,7 @@ spec:
     - knative
     - eventing
     - sources
+    - importers
     kind: CronJobSource
     plural: cronjobsources
   scope: Namespaced
@@ -808,12 +1204,22 @@ spec:
   validation:
     openAPIV3Schema:
       properties:
-        apiVersion:
-          type: string
-        kind:
-          type: string
-        metadata:
+        registry:
           type: object
+          description: "Internal information, users should not set this property"
+          properties:
+            eventTypes:
+              type: object
+              description: "Event types that CronJobSource can produce"
+              properties:
+                cron:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      pattern: "dev.knative.cronjob.event"
+                    schema:
+                      type: string
         spec:
           properties:
             data:
@@ -869,18 +1275,24 @@ spec:
             sinkUri:
               type: string
           type: object
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: eventtypes.eventing.knative.dev
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
 spec:
   group: eventing.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: EventType
     plural: eventtypes
@@ -942,11 +1354,14 @@ kind: CustomResourceDefinition
 metadata:
   name: sequences.messaging.knative.dev
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
 spec:
   group: messaging.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: Sequence
     plural: sequences
@@ -1030,11 +1445,14 @@ kind: CustomResourceDefinition
 metadata:
   name: subscriptions.eventing.knative.dev
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
 spec:
   group: eventing.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: Subscription
     plural: subscriptions
@@ -1129,11 +1547,14 @@ kind: CustomResourceDefinition
 metadata:
   name: triggers.eventing.knative.dev
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
 spec:
   group: eventing.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: Trigger
     plural: triggers
@@ -1224,10 +1645,27 @@ data:
         name: some-other-provisioner
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default-ch-webhook
+  namespace: knative-eventing
+data:
+  default-ch-config: |
+    clusterDefault:
+      apiVersion: messaging.knative.dev/v1alpha1
+      kind: InMemoryChannel
+    namespaceDefaults:
+      some-namespace:
+        apiVersion: messaging.knative.dev/v1alpha1
+        kind: InMemoryChannel
+---
+apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    prometheus.io/scrape: "true"
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     app: sources-controller
   name: sources-controller
   namespace: knative-eventing
@@ -1243,7 +1681,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     role: eventing-webhook
   name: eventing-webhook
   namespace: knative-eventing
@@ -1260,7 +1698,7 @@ metadata:
   name: eventing-controller
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
@@ -1272,13 +1710,13 @@ spec:
         sidecar.istio.io/inject: "false"
       labels:
         app: eventing-controller
-        eventing.knative.dev/release: "v0.7.1"
+        eventing.knative.dev/release: devel
     spec:
       serviceAccountName: eventing-controller
       containers:
       - name: eventing-controller
         terminationMessagePolicy: FallbackToLogsOnError
-        image: quay.io/openshift-knative/knative-eventing-controller:v0.7.1
+        image: quay.io/openshift-knative/knative-eventing-controller:v0.8.0
         env:
           - name: SYSTEM_NAMESPACE
             valueFrom:
@@ -1291,11 +1729,11 @@ spec:
           - name: METRICS_DOMAIN
             value: knative.dev/eventing
           - name: BROKER_INGRESS_IMAGE
-            value: quay.io/openshift-knative/knative-eventing-ingress:v0.7.1
+            value: quay.io/openshift-knative/knative-eventing-ingress:v0.8.0
           - name: BROKER_INGRESS_SERVICE_ACCOUNT
             value: eventing-broker-ingress
           - name: BROKER_FILTER_IMAGE
-            value: quay.io/openshift-knative/knative-eventing-filter:v0.7.1
+            value: quay.io/openshift-knative/knative-eventing-filter:v0.8.0
           - name: BROKER_FILTER_SERVICE_ACCOUNT
             value: eventing-broker-filter
         ports:
@@ -1315,7 +1753,7 @@ metadata:
   name: sources-controller
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
@@ -1327,12 +1765,12 @@ spec:
         sidecar.istio.io/inject: "false"
       labels:
         app: sources-controller
-        eventing.knative.dev/release: "v0.7.1"
+        eventing.knative.dev/release: devel
     spec:
-      serviceAccountName: eventing-controller
+      serviceAccountName: eventing-source-controller
       containers:
       - name: controller
-        image: quay.io/openshift-knative/knative-eventing-sources-controller:v0.7.1
+        image: quay.io/openshift-knative/knative-eventing-sources-controller:v0.8.0
         resources:
           requests:
             cpu: 100m
@@ -1355,9 +1793,9 @@ spec:
           - name: METRICS_DOMAIN
             value: knative.dev/sources
           - name: CRONJOB_RA_IMAGE
-            value: quay.io/openshift-knative/knative-eventing-cronjob-receive-adapter:v0.7.1
+            value: quay.io/openshift-knative/knative-eventing-cronjob-receive-adapter:v0.8.0
           - name: APISERVER_RA_IMAGE
-            value: quay.io/openshift-knative/knative-eventing-apiserver-receive-adapter:v0.7.1
+            value: quay.io/openshift-knative/knative-eventing-apiserver-receive-adapter:v0.8.0
       volumes:
         - name: config-logging
           configMap:
@@ -1369,7 +1807,7 @@ metadata:
   name: eventing-webhook
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
@@ -1386,7 +1824,7 @@ spec:
       containers:
       - name: eventing-webhook
         terminationMessagePolicy: FallbackToLogsOnError
-        image: quay.io/openshift-knative/knative-eventing-webhook:v0.7.1
+        image: quay.io/openshift-knative/knative-eventing-webhook:v0.8.0
         volumeMounts:
         - name: config-logging
           mountPath: /etc/config-logging
@@ -1399,48 +1837,8 @@ spec:
           value: config-logging
         - name: WEBHOOK_NAME
           value: eventing-webhook
-      volumes:
-        - name: config-logging
-          configMap:
-            name: config-logging
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: webhook
-  namespace: knative-eventing
-spec:
-  replicas: 0
-  selector:
-    matchLabels: &labels
-      app: webhook
-      role: webhook
-  template:
-    metadata:
-      annotations:
-        sidecar.istio.io/inject: "false"
-      labels: *labels
-    spec:
-      serviceAccountName: eventing-webhook
-      containers:
-      - name: webhook
-        terminationMessagePolicy: FallbackToLogsOnError
-        image: quay.io/openshift-knative/knative-eventing-webhook:v0.7.1
-        volumeMounts:
-        - name: config-logging
-          mountPath: /etc/config-logging
-        env:
-        - name: SYSTEM_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: CONFIG_LOGGING_NAME
-          value: config-logging
-        - name: WEBHOOK_NAME
-          value: webhook
-        resources:
-          limits:
-            memory: 1000Mi   # An initial guess, but consistent with serving
+        - name: REG_DELAY_TIME
+          value: "10"
       volumes:
         - name: config-logging
           configMap:
@@ -1549,7 +1947,7 @@ kind: ClusterChannelProvisioner
 metadata:
   name: in-memory
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec: {}
 ---
 apiVersion: v1
@@ -1558,14 +1956,14 @@ metadata:
   name: in-memory-channel-controller
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: in-memory-channel-controller
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - eventing.knative.dev
@@ -1615,7 +2013,7 @@ kind: ClusterRoleBinding
 metadata:
   name: in-memory-channel-controller
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: in-memory-channel-controller
@@ -1631,7 +2029,7 @@ metadata:
   name: in-memory-channel-controller
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
@@ -1645,7 +2043,7 @@ spec:
       serviceAccountName: in-memory-channel-controller
       containers:
         - name: controller
-          image: quay.io/openshift-knative/knative-eventing-in-memory-channel-controller:v0.7.1
+          image: quay.io/openshift-knative/knative-eventing-in-memory-channel-controller:v0.8.0
           env:
           - name: SYSTEM_NAMESPACE
             valueFrom:
@@ -1658,14 +2056,14 @@ metadata:
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: in-memory-channel-dispatcher
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - "eventing.knative.dev"
@@ -1690,7 +2088,7 @@ kind: ClusterRoleBinding
 metadata:
   name: in-memory-channel-dispatcher
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: in-memory-channel-dispatcher
@@ -1706,7 +2104,7 @@ metadata:
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - ""
@@ -1723,7 +2121,7 @@ metadata:
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: in-memory-channel-dispatcher
@@ -1739,7 +2137,7 @@ metadata:
   name: in-memory-channel-dispatcher
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
@@ -1753,7 +2151,7 @@ spec:
       serviceAccountName: in-memory-channel-dispatcher
       containers:
         - name: dispatcher
-          image: quay.io/openshift-knative/knative-eventing-in-memory-channel-dispatcher:v0.7.1
+          image: quay.io/openshift-knative/knative-eventing-in-memory-channel-dispatcher:v0.8.0
           env:
           - name: SYSTEM_NAMESPACE
             valueFrom:
@@ -1763,9 +2161,27 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  name: imc-addressable-resolver
+  labels:
+    eventing.knative.dev/release: devel
+    duck.knative.dev/addressable: "true"
+rules:
+  - apiGroups:
+      - messaging.knative.dev
+    resources:
+      - inmemorychannels
+      - inmemorychannels/status
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
   name: imc-channelable-manipulator
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     duck.knative.dev/channelable: "true"
 rules:
   - apiGroups:
@@ -1786,7 +2202,7 @@ kind: ClusterRole
 metadata:
   name: imc-controller
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - messaging.knative.dev
@@ -1853,7 +2269,7 @@ kind: ClusterRole
 metadata:
   name: imc-dispatcher
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 rules:
   - apiGroups:
       - messaging.knative.dev
@@ -1885,7 +2301,7 @@ metadata:
   name: imc-dispatcher
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     messaging.knative.dev/channel: in-memory-channel
     messaging.knative.dev/role: dispatcher
 spec:
@@ -1903,7 +2319,7 @@ metadata:
   name: imc-controller
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -1911,14 +2327,14 @@ metadata:
   name: imc-dispatcher
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: imc-controller
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: imc-controller
@@ -1933,7 +2349,7 @@ kind: ClusterRoleBinding
 metadata:
   name: imc-dispatcher
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 subjects:
   - kind: ServiceAccount
     name: imc-dispatcher
@@ -1948,12 +2364,15 @@ kind: CustomResourceDefinition
 metadata:
  name: inmemorychannels.messaging.knative.dev
  labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
     knative.dev/crd-install: "true"
     messaging.knative.dev/subscribable: "true"
 spec:
   group: messaging.knative.dev
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
   names:
     kind: InMemoryChannel
     plural: inmemorychannels
@@ -2031,7 +2450,7 @@ metadata:
   name: imc-controller
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
@@ -2045,7 +2464,7 @@ spec:
       serviceAccountName: imc-controller
       containers:
       - name: controller
-        image: quay.io/openshift-knative/knative-eventing-imc-controller:v0.7.1
+        image: quay.io/openshift-knative/knative-eventing-imc-controller:v0.8.0
         env:
           - name: CONFIG_LOGGING_NAME
             value: config-logging
@@ -2071,7 +2490,7 @@ metadata:
   name: imc-dispatcher
   namespace: knative-eventing
   labels:
-    eventing.knative.dev/release: "v0.7.1"
+    eventing.knative.dev/release: devel
 spec:
   replicas: 1
   selector:
@@ -2085,7 +2504,7 @@ spec:
       serviceAccountName: imc-dispatcher
       containers:
       - name: dispatcher
-        image: quay.io/openshift-knative/knative-eventing-imc-dispatcher:v0.7.1
+        image: quay.io/openshift-knative/knative-eventing-imc-dispatcher:v0.8.0
         env:
           - name: CONFIG_LOGGING_NAME
             value: config-logging
