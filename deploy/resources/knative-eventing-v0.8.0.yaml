@@ -2760,5 +2760,17 @@ spec:
         image: gcr.io/knative-releases/github.com/knative/eventing/cmd/in_memory/dispatcher@sha256:75101533d5467d13700f6c1a5fd0daac7af31dc7ca5aa44abe14ffedf2f71c7e
         name: dispatcher
       serviceAccountName: in-memory-channel-dispatcher
-
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eventing-webhook
+  namespace: knative-eventing
+  labels:
+    app: eventing-webhook
+spec:
+  podSelector:
+    matchLabels:
+      app: eventing-webhook
+  ingress:
+  - {}
