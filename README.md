@@ -10,7 +10,7 @@ kubectl apply -f deploy/
 ```
 
 To be clear, the operator will be deployed in the `default` namespace,
-and then it will install Knative Serving in the `knative-eventing`
+and then it will install Knative Eventing in the `knative-eventing`
 namespace.
 
 ## Prerequisites
@@ -122,11 +122,12 @@ The [catalog.sh](hack/catalog.sh) script should yield a valid
 `ClusterServiceVersions`, `CustomResourceDefinitions`, and package
 manifest in the bundle beneath
 [deploy/olm-catalog](deploy/olm-catalog/). You should apply its output
-in the OLM namespace:
+in the namespace where the other `CatalogSources` live on your cluster,
+e.g. `openshift-marketplace`:
 
 ```
-OLM_NS=$(kubectl get pods --all-namespaces | grep olm-operator | head -1 | awk '{print $1}')
-./hack/catalog.sh | kubectl apply -n $OLM_NS -f -
+CN_NS=$(kubectl get catalogsources --all-namespaces | tail -1 | awk '{print $1}')
+./hack/catalog.sh | kubectl apply -n $CN_NS -f -
 ```
 
 ### Using OLM on Minikube
@@ -145,7 +146,7 @@ Once all the pods in the `olm` namespace are running, install the
 operator like so:
 
 ```
-./hack/catalog.sh | kubectl apply -n $OLM_NS -f -
+./hack/catalog.sh | kubectl apply -n $CN_NS -f -
 ```
 
 Interacting with OLM is possible using `kubectl` but the OKD console
@@ -159,7 +160,7 @@ To install Knative Eventing into the `knative-eventing` namespace,
 simply subscribe to the operator by running this script:
 
 ```
-OLM_NS=$(kubectl get og --all-namespaces | grep olm-operators | awk '{print $1}')
+CN_NS=$(kubectl get catalogsources --all-namespaces | tail -1 | awk '{print $1}')
 OPERATOR_NS=$(kubectl get og --all-namespaces | grep global-operators | awk '{print $1}')
 cat <<-EOF | kubectl apply -f -
 apiVersion: operators.coreos.com/v1alpha1
@@ -170,7 +171,7 @@ metadata:
   namespace: $OPERATOR_NS
 spec:
   source: knative-eventing-operator
-  sourceNamespace: $OLM_NS
+  sourceNamespace: $CN_NS
   name: knative-eventing-operator
   channel: alpha
 EOF
