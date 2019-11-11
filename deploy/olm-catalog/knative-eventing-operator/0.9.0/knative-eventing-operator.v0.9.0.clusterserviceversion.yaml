@@ -87,7 +87,7 @@ spec:
                   value: knative-eventing-operator
                 image: quay.io/openshift-knative/knative-eventing-operator:v0.9.0
                 args:
-                  - --filename=https://raw.githubusercontent.com/openshift/knative-eventing/release-v0.9.0/openshift/release/knative-eventing-v0.9.0.yaml
+                  - --filename=https://raw.githubusercontent.com/openshift/knative-eventing/release-v0.9.0/openshift/release/knative-eventing-v0.10.0.yaml
                 imagePullPolicy: Always
                 name: knative-eventing-operator
                 resources: {}
