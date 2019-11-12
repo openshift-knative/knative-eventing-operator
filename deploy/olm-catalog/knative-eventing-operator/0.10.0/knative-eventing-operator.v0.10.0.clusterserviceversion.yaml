@@ -6,17 +6,17 @@ metadata:
     capabilities: Basic Install
     categories: Networking,Integration & Delivery,Cloud Provider,Developer Tools
     certified: "false"
-    containerImage: quay.io/openshift-knative/knative-eventing-operator:v0.9.0
+    containerImage: quay.io/openshift-knative/knative-eventing-operator:v0.10.0
     createdAt: "2019-05-07T17:00:00Z"
     description: |-
       Knative Eventing is a system that is designed to address a
       common need for cloud native development and provides composable
       primitives to enable late-binding event sources and event
       consumers.
-    operators.operatorframework.io/internal-object: true
+    operators.operatorframework.io/internal-object: "true"
     repository: https://github.com/openshift-knative/knative-eventing-operator
     support: Red Hat
-  name: knative-eventing-operator.v0.9.0
+  name: knative-eventing-operator.v0.10.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -86,9 +86,7 @@ spec:
                       fieldPath: metadata.name
                 - name: OPERATOR_NAME
                   value: knative-eventing-operator
-                image: quay.io/openshift-knative/knative-eventing-operator:v0.9.0
-                args:
-                  - --filename=https://raw.githubusercontent.com/openshift/knative-eventing/release-v0.9.0/openshift/release/knative-eventing-v0.9.0.yaml
+                image: quay.io/openshift-knative/knative-eventing-operator:v0.10.0
                 imagePullPolicy: Always
                 name: knative-eventing-operator
                 resources: {}
@@ -170,5 +168,5 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-  replaces: knative-eventing-operator.v0.8.0
-  version: 0.9.0
+  replaces: knative-eventing-operator.v0.9.0
+  version: 0.10.0
