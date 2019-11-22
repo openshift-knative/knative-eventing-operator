@@ -173,6 +173,8 @@ func (r *ReconcileKnativeEventing) updateServiceMeshMemberRole(api client.Client
 	// if knative-eventing ns is not configured by any chance than update existing ServiceMeshMemberRoll
 	if newMembers, changed := appendIfAbsent(smmr.Spec.Members, "knative-eventing"); changed {
 		smmr.Spec.Members = newMembers
+
+		log.Info("Appending knative-eventing namespace to SMMR")
 		return api.Update(context.TODO(), smmr)
 	}
 	return nil
@@ -216,6 +218,7 @@ func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEve
 
 	// append the ns to SMMR
 	r.updateServiceMeshMemberRole(r.client)
+	log.Info("Updated ServiceMeshMemberRole")
 
 	return nil
 }
