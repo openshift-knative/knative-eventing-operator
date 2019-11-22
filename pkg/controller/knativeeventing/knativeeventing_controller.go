@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 
+	maistrav1 "github.com/maistra/istio-operator/pkg/apis/maistra/v1"
+
 	mf "github.com/jcrossley3/manifestival"
 	eventingv1alpha1 "github.com/openshift-knative/knative-eventing-operator/pkg/apis/eventing/v1alpha1"
 	"github.com/openshift-knative/knative-eventing-operator/version"
@@ -161,6 +163,31 @@ func (r *ReconcileKnativeEventing) updateStatus(instance *eventingv1alpha1.Knati
 	return nil
 }
 
+// check in order if we update
+func (r *ReconcileKnativeEventing) updateServiceMeshMemberRole(api client.Client) error {
+	smmr := &maistrav1.ServiceMeshMemberRoll{}
+	if err := api.Get(context.TODO(), client.ObjectKey{Namespace: "knative-serving-ingress", Name: "default"}, smmr); err != nil {
+		return err
+	}
+	// If ServiceMeshMemberRoll already exist than check for knative-eventing ns is configured member or not
+	// if knative-eventing ns is not configured by any chance than update existing ServiceMeshMemberRoll
+	if newMembers, changed := appendIfAbsent(smmr.Spec.Members, "knative-eventing"); changed {
+		smmr.Spec.Members = newMembers
+		return api.Update(context.TODO(), smmr)
+	}
+	return nil
+}
+
+// appendIfAbsent append namespace to member if its not exist
+func appendIfAbsent(members []string, namespace string) ([]string, bool) {
+	for _, val := range members {
+		if val == namespace {
+			return members, false
+		}
+	}
+	return append(members, namespace), true
+}
+
 // Apply the embedded resources
 func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEventing) error {
 	// Transform resources as appropriate
@@ -186,6 +213,10 @@ func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEve
 	instance.Status.Version = version.Version
 	log.Info("Install succeeded", "version", version.Version)
 	instance.Status.MarkInstallSucceeded()
+
+	// append the ns to SMMR
+	r.updateServiceMeshMemberRole(r.client)
+
 	return nil
 }
 
