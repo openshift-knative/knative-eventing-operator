@@ -143,6 +143,12 @@ spec:
           - '*'
           verbs:
           - '*'
+        - apiGroups:
+          - maistra.io
+          resources:
+          - servicemeshmemberrolls
+          verbs:
+          - '*'
         serviceAccountName: knative-eventing-operator
     strategy: deployment
   installModes:
