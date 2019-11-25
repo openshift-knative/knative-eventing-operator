@@ -217,8 +217,9 @@ func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEve
 	instance.Status.MarkInstallSucceeded()
 
 	// append the ns to SMMR
-	r.updateServiceMeshMemberRole(r.client)
-	log.Info("Updated ServiceMeshMemberRole")
+	if err := r.updateServiceMeshMemberRole(r.client); err != nil {
+		log.Info("Error updating the ServiceMeshMemberRole: " + err.Error())
+	}
 
 	return nil
 }
