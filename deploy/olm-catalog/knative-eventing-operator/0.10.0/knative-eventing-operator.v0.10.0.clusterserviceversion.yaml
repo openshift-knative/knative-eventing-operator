@@ -61,6 +61,12 @@ spec:
           - '*'
           verbs:
           - '*'
+        - apiGroups:
+          - maistra.io
+          resources:
+          - servicemeshmemberrolls
+          verbs:
+          - '*'
         serviceAccountName: knative-eventing-operator
       deployments:
       - name: knative-eventing-operator
@@ -141,12 +147,6 @@ spec:
           - eventing.knative.dev
           resources:
           - '*'
-          verbs:
-          - '*'
-        - apiGroups:
-          - maistra.io
-          resources:
-          - servicemeshmemberrolls
           verbs:
           - '*'
         serviceAccountName: knative-eventing-operator
