@@ -11,3 +11,18 @@ spec:
       app: eventing-webhook
   ingress:
     - {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: knative-eventing-allow-all
+  namespace: knative-eventing
+spec:
+  egress:
+  - {}
+  ingress:
+  - {}
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
