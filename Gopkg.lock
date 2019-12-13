@@ -184,14 +184,11 @@
   version = "v1.7.0"
 
 [[projects]]
-  digest = "1:9de28de6b4453a6a96cdbb16b86d48f2640397e6739ed2d3d7ee5fd55b93d193"
+  digest = "1:a1b2a5e38f79688ee8250942d5fa960525fceb1024c855c7bc76fa77b0f3cca2"
   name = "github.com/gogo/protobuf"
   packages = [
-    "gogoproto",
     "proto",
-    "protoc-gen-gogo/descriptor",
     "sortkeys",
-    "types",
   ]
   pruneopts = "NUT"
   revision = "ba06b47c162d49f2af050fb4c75bcbc86a159d5c"
@@ -387,14 +384,6 @@
   ]
   pruneopts = "NUT"
   revision = "1ea4449da9834f4d333f1cc461c374aea217d249"
-
-[[projects]]
-  branch = "maistra-1.0"
-  digest = "1:6d1593e902d13417c78e4085a51665a3396a15ffeb9b584352d6309d0457e7ee"
-  name = "github.com/maistra/istio-operator"
-  packages = ["pkg/apis/maistra/v1"]
-  pruneopts = "NUT"
-  revision = "3a685c97183434bba135ac9b25900bfc20282b71"
 
 [[projects]]
   digest = "1:56dbf15e091bf7926cb33a57cb6bdfc658fc6d3498d2f76f10a97ce7856f1fde"
@@ -812,17 +801,6 @@
   version = "v2.2.2"
 
 [[projects]]
-  branch = "release-1.1"
-  digest = "1:fe0635a2a7b00901c8e403a416fc8705c3c3b080f99a2177c4f565adc119a0ca"
-  name = "istio.io/api"
-  packages = [
-    "mesh/v1alpha1",
-    "networking/v1alpha3",
-  ]
-  pruneopts = "NUT"
-  revision = "162827b552e84a48f0d9d45a8f10ea1623706663"
-
-[[projects]]
   digest = "1:0ae5137dc94a40cd72fe4fcdf9db0c119d2d63df04af5958cfd514a2a21b3988"
   name = "k8s.io/api"
   packages = [
@@ -1144,7 +1122,6 @@
     "github.com/go-openapi/spec",
     "github.com/jcrossley3/manifestival",
     "github.com/knative/pkg/apis",
-    "github.com/maistra/istio-operator/pkg/apis/maistra/v1",
     "github.com/operator-framework/operator-sdk/pkg/k8sutil",
     "github.com/operator-framework/operator-sdk/pkg/leader",
     "github.com/operator-framework/operator-sdk/pkg/log/zap",
