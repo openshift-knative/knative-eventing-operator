@@ -63,10 +63,6 @@ required = [
   version = "=v0.8.0" #osdk_version_annotation
 
 [[constraint]]
-  name = "github.com/maistra/istio-operator"
-  branch = "maistra-1.0"
-
-[[constraint]]
   name = "github.com/jcrossley3/manifestival"
   branch = "master"
 
