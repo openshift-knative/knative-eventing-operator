@@ -5,19 +5,19 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: knative-eventing
 
 ---
 aggregationRule:
   clusterRoleSelectors:
-    - matchLabels:
-        duck.knative.dev/addressable: "true"
+  - matchLabels:
+      duck.knative.dev/addressable: "true"
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: addressable-resolver
 rules: []
 ---
@@ -26,162 +26,182 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: service-addressable-resolver
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: serving-addressable-resolver
 rules:
-  - apiGroups:
-      - serving.knative.dev
-    resources:
-      - routes
-      - routes/status
-      - services
-      - services/status
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - serving.knative.dev
+  resources:
+  - routes
+  - routes/status
+  - services
+  - services/status
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: channel-addressable-resolver
 rules:
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - channels
-      - channels/status
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - channels
+  - channels/status
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: broker-addressable-resolver
 rules:
-  - apiGroups:
-      - eventing.knative.dev
-    resources:
-      - brokers
-      - brokers/status
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - eventing.knative.dev
+  resources:
+  - brokers
+  - brokers/status
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: messaging-addressable-resolver
 rules:
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - sequences
-      - sequences/status
-      - parallels
-      - parallels/status
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - sequences
+  - sequences/status
+  - parallels
+  - parallels/status
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: "v0.11.0"
+  name: flows-addressable-resolver
+rules:
+- apiGroups:
+  - flows.knative.dev
+  resources:
+  - sequences
+  - sequences/status
+  - parallels
+  - parallels/status
+  verbs:
+  - get
+  - list
+  - watch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-broker-filter
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - eventing.knative.dev
-    resources:
-      - triggers
-      - triggers/status
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - eventing.knative.dev
+  resources:
+  - triggers
+  - triggers/status
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-broker-ingress
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-config-reader
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
 
 ---
 aggregationRule:
   clusterRoleSelectors:
-    - matchLabels:
-        duck.knative.dev/channelable: "true"
+  - matchLabels:
+      duck.knative.dev/channelable: "true"
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: channelable-manipulator
 rules: []
 
@@ -190,201 +210,257 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
   name: knative-eventing-namespaced-admin
 rules:
-  - apiGroups:
-      - eventing.knative.dev
-    resources:
-      - '*'
-    verbs:
-      - '*'
+- apiGroups:
+  - eventing.knative.dev
+  resources:
+  - '*'
+  verbs:
+  - '*'
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
   name: knative-messaging-namespaced-admin
 rules:
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - '*'
-    verbs:
-      - '*'
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - '*'
+  verbs:
+  - '*'
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
   name: knative-eventing-sources-namespaced-admin
 rules:
-  - apiGroups:
-      - sources.eventing.knative.dev
-    resources:
-      - '*'
-    verbs:
-      - '*'
+- apiGroups:
+  - sources.eventing.knative.dev
+  resources:
+  - '*'
+  verbs:
+  - '*'
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
   name: knative-eventing-namespaced-edit
 rules:
-  - apiGroups:
-      - eventing.knative.dev
-      - messaging.knative.dev
-      - sources.eventing.knative.dev
-    resources:
-      - '*'
-    verbs:
-      - create
-      - update
-      - patch
-      - delete
+- apiGroups:
+  - eventing.knative.dev
+  - messaging.knative.dev
+  - sources.eventing.knative.dev
+  resources:
+  - '*'
+  verbs:
+  - create
+  - update
+  - patch
+  - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     rbac.authorization.k8s.io/aggregate-to-view: "true"
   name: knative-eventing-namespaced-view
 rules:
-  - apiGroups:
-      - eventing.knative.dev
-      - messaging.knative.dev
-      - sources.eventing.knative.dev
-    resources:
-      - '*'
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - eventing.knative.dev
+  - messaging.knative.dev
+  - sources.eventing.knative.dev
+  resources:
+  - '*'
+  verbs:
+  - get
+  - list
+  - watch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: knative-eventing-controller
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - namespaces
-      - secrets
-      - configmaps
-      - services
-      - events
-      - serviceaccounts
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - rbac.authorization.k8s.io
-    resources:
-      - rolebindings
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - eventing.knative.dev
-    resources:
-      - brokers
-      - brokers/status
-      - triggers
-      - triggers/status
-      - eventtypes
-      - eventtypes/status
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - eventing.knative.dev
-    resources:
-      - brokers/finalizers
-      - triggers/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - sequences
-      - sequences/status
-      - channels
-      - channels/status
-      - parallels
-      - parallels/status
-      - subscriptions
-      - subscriptions/status
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - sequences/finalizers
-      - parallels/finalizers
-      - channels/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - apiextensions.k8s.io
-    resources:
-      - customresourcedefinitions
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - secrets
+  - configmaps
+  - services
+  - events
+  - serviceaccounts
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - eventing.knative.dev
+  resources:
+  - brokers
+  - brokers/status
+  - triggers
+  - triggers/status
+  - eventtypes
+  - eventtypes/status
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - eventing.knative.dev
+  resources:
+  - brokers/finalizers
+  - triggers/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - sequences
+  - sequences/status
+  - channels
+  - channels/status
+  - parallels
+  - parallels/status
+  - subscriptions
+  - subscriptions/status
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - flows.knative.dev
+  resources:
+  - sequences
+  - sequences/status
+  - parallels
+  - parallels/status
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - sequences/finalizers
+  - parallels/finalizers
+  - channels/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      duck.knative.dev/podspecable: "true"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    eventing.knative.dev/release: "v0.11.0"
+  name: podspecable-binding
+rules: []
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: "v0.11.0"
+  name: builtin-podspecable-binding
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - statefulsets
+  - replicasets
+  verbs:
+  - list
+  - watch
+  - patch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - list
+  - watch
+  - patch
 
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-controller
   namespace: knative-eventing
 ---
@@ -392,7 +468,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-webhook
   namespace: knative-eventing
 ---
@@ -400,20 +476,20 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-source-controller
   namespace: knative-eventing
 
 ---
 aggregationRule:
   clusterRoleSelectors:
-    - matchLabels:
-        duck.knative.dev/source: "true"
+  - matchLabels:
+      duck.knative.dev/source: "true"
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: source-observer
 rules: []
 ---
@@ -422,281 +498,321 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/source: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-sources-source-observer
 rules:
-  - apiGroups:
-      - sources.eventing.knative.dev
-    resources:
-      - containersources
-      - cronjobsources
-      - apiserversources
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - sources.eventing.knative.dev
+  resources:
+  - containersources
+  - cronjobsources
+  - apiserversources
+  verbs:
+  - get
+  - list
+  - watch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: knative-eventing-source-controller
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-      - configmaps
-      - services
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - sources.eventing.knative.dev
-    resources:
-      - cronjobsources
-      - cronjobsources/status
-      - cronjobsources/finalizers
-      - containersources
-      - containersources/status
-      - containersources/finalizers
-      - apiserversources
-      - apiserversources/status
-      - apiserversources/finalizers
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - serving.knative.dev
-    resources:
-      - services
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - eventing.knative.dev
-    resources:
-      - eventtypes
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - configmaps
+  - services
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - sources.eventing.knative.dev
+  resources:
+  - cronjobsources
+  - cronjobsources/status
+  - cronjobsources/finalizers
+  - containersources
+  - containersources/status
+  - containersources/finalizers
+  - sinkbindings
+  - sinkbindings/status
+  - sinkbindings/finalizers
+  - apiserversources
+  - apiserversources/status
+  - apiserversources/finalizers
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - serving.knative.dev
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - eventing.knative.dev
+  resources:
+  - eventtypes
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: knative-eventing-webhook
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-    verbs:
-      - get
-      - create
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-    verbs:
-      - get
-  - apiGroups:
-      - apps
-    resources:
-      - deployments/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - admissionregistration.k8s.io
-    resources:
-      - mutatingwebhookconfigurations
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - eventing.knative.dev
-    resources:
-      - brokers
-      - brokers/status
-      - channels
-      - channels/status
-      - subscriptions
-      - subscriptions/status
-      - triggers
-      - triggers/status
-      - eventtypes
-      - eventtypes/status
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - create
+  - update
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - deployments/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - admissionregistration.k8s.io
+  resources:
+  - mutatingwebhookconfigurations
+  - validatingwebhookconfigurations
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
+- apiGroups:
+  - sources.eventing.knative.dev
+  resources:
+  - sinkbindings
+  - sinkbindings/status
+  - sinkbindings/finalizers
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+  - patch
+  - watch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: knative-eventing-controller
 subjects:
-  - kind: ServiceAccount
-    name: eventing-controller
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: eventing-controller
+  namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-controller-resolver
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: addressable-resolver
 subjects:
-  - kind: ServiceAccount
-    name: eventing-controller
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: eventing-controller
+  namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-controller-source-observer
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: source-observer
 subjects:
-  - kind: ServiceAccount
-    name: eventing-controller
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: eventing-controller
+  namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-controller-manipulator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: channelable-manipulator
 subjects:
-  - kind: ServiceAccount
-    name: eventing-controller
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: eventing-controller
+  namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-webhook
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: knative-eventing-webhook
 subjects:
-  - kind: ServiceAccount
-    name: eventing-webhook
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: eventing-webhook
+  namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-source-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: knative-eventing-source-controller
 subjects:
-  - kind: ServiceAccount
-    name: eventing-source-controller
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: eventing-source-controller
+  namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-source-controller-resolver
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: addressable-resolver
 subjects:
-  - kind: ServiceAccount
-    name: eventing-source-controller
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: eventing-source-controller
+  namespace: knative-eventing
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    eventing.knative.dev/release: "v0.11.0"
+  name: eventing-webhook-resolver
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: addressable-resolver
+subjects:
+- kind: ServiceAccount
+  name: eventing-webhook
+  namespace: knative-eventing
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    eventing.knative.dev/release: "v0.11.0"
+  name: eventing-webhook-podspecable-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: podspecable-binding
+subjects:
+- kind: ServiceAccount
+  name: eventing-webhook
+  namespace: knative-eventing
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -715,25 +831,25 @@ metadata:
   creationTimestamp: null
   labels:
     duck.knative.dev/source: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: apiserversources.sources.eventing.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: sources.eventing.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
-      - sources
+    - all
+    - knative
+    - eventing
+    - sources
     kind: ApiServerSource
     plural: apiserversources
   scope: Namespaced
@@ -783,51 +899,51 @@ spec:
               type: string
             sink:
               anyOf:
-                - description: the destination that should receive events.
-                  properties:
-                    ref:
-                      description: a reference to a Kubernetes object from which to
-                        retrieve the target URI.
-                      properties:
-                        apiVersion:
-                          minLength: 1
-                          type: string
-                        kind:
-                          minLength: 1
-                          type: string
-                        name:
-                          minLength: 1
-                          type: string
-                      required:
-                        - apiVersion
-                        - kind
-                        - name
-                      type: object
-                    uri:
-                      description: the target URI. If ref is provided, this must be
-                        relative URI reference.
-                      type: string
-                  type: object
-                - description: 'DEPRECATED: a reference to a Kubernetes object from
-                  which to retrieve the target URI.'
-                  properties:
-                    apiVersion:
-                      minLength: 1
-                      type: string
-                    kind:
-                      minLength: 1
-                      type: string
-                    name:
-                      minLength: 1
-                      type: string
-                  required:
+              - description: the destination that should receive events.
+                properties:
+                  ref:
+                    description: a reference to a Kubernetes object from which to
+                      retrieve the target URI.
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
                     - apiVersion
                     - kind
                     - name
-                  type: object
+                    type: object
+                  uri:
+                    description: the target URI. If ref is provided, this must be
+                      relative URI reference.
+                    type: string
+                type: object
+              - description: 'DEPRECATED: a reference to a Kubernetes object from
+                  which to retrieve the target URI.'
+                properties:
+                  apiVersion:
+                    minLength: 1
+                    type: string
+                  kind:
+                    minLength: 1
+                    type: string
+                  name:
+                    minLength: 1
+                    type: string
+                required:
+                - apiVersion
+                - kind
+                - name
+                type: object
           required:
-            - resources
-            - sink
+          - resources
+          - sink
           type: object
         status:
           properties:
@@ -847,17 +963,17 @@ spec:
                   type:
                     type: string
                 required:
-                  - type
-                  - status
+                - type
+                - status
                 type: object
               type: array
             sinkUri:
               type: string
           type: object
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -865,29 +981,29 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
   name: brokers.eventing.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
-    - JSONPath: .status.address.url
-      name: URL
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.url
+    name: URL
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: eventing.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
+    - all
+    - knative
+    - eventing
     kind: Broker
     plural: brokers
     singular: broker
@@ -910,13 +1026,13 @@ spec:
                 spec:
                   type: object
               required:
-                - apiVersion
-                - kind
+              - apiVersion
+              - kind
               type: object
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -924,35 +1040,35 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
     messaging.knative.dev/subscribable: "true"
   name: channels.messaging.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
-    - JSONPath: .status.address.url
-      name: URL
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.url
+    name: URL
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: messaging.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - messaging
-      - channel
+    - all
+    - knative
+    - messaging
+    - channel
     kind: Channel
     plural: channels
     shortNames:
-      - ch
+    - ch
     singular: channel
   scope: Namespaced
   subresources:
@@ -973,8 +1089,8 @@ spec:
                 spec:
                   type: object
               required:
-                - apiVersion
-                - kind
+              - apiVersion
+              - kind
               type: object
             subscribable:
               properties:
@@ -997,9 +1113,9 @@ spec:
                             minLength: 1
                             type: string
                         required:
-                          - namespace
-                          - name
-                          - uid
+                        - namespace
+                        - name
+                        - uid
                         type: object
                       replyURI:
                         minLength: 1
@@ -1011,13 +1127,13 @@ spec:
                         minLength: 1
                         type: string
                     required:
-                      - uid
+                    - uid
                   type: array
               type: object
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -1025,7 +1141,7 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     duck.knative.dev/source: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: containersources.sources.eventing.knative.dev
@@ -1033,10 +1149,10 @@ spec:
   group: sources.eventing.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
-      - sources
+    - all
+    - knative
+    - eventing
+    - sources
     kind: ContainerSource
     plural: containersources
   scope: Namespaced
@@ -1068,48 +1184,48 @@ spec:
               type: string
             sink:
               anyOf:
-                - description: the destination that should receive events.
-                  properties:
-                    ref:
-                      description: a reference to a Kubernetes object from which to
-                        retrieve the target URI.
-                      properties:
-                        apiVersion:
-                          minLength: 1
-                          type: string
-                        kind:
-                          minLength: 1
-                          type: string
-                        name:
-                          minLength: 1
-                          type: string
-                      required:
-                        - apiVersion
-                        - kind
-                        - name
-                      type: object
-                    uri:
-                      description: the target URI. If ref is provided, this must be
-                        relative URI reference.
-                      type: string
-                  type: object
-                - description: 'DEPRECATED: a reference to a Kubernetes object from
-                  which to retrieve the target URI.'
-                  properties:
-                    apiVersion:
-                      minLength: 1
-                      type: string
-                    kind:
-                      minLength: 1
-                      type: string
-                    name:
-                      minLength: 1
-                      type: string
-                  required:
+              - description: the destination that should receive events.
+                properties:
+                  ref:
+                    description: a reference to a Kubernetes object from which to
+                      retrieve the target URI.
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
                     - apiVersion
                     - kind
                     - name
-                  type: object
+                    type: object
+                  uri:
+                    description: the target URI. If ref is provided, this must be
+                      relative URI reference.
+                    type: string
+                type: object
+              - description: 'DEPRECATED: a reference to a Kubernetes object from
+                  which to retrieve the target URI.'
+                properties:
+                  apiVersion:
+                    minLength: 1
+                    type: string
+                  kind:
+                    minLength: 1
+                    type: string
+                  name:
+                    minLength: 1
+                    type: string
+                required:
+                - apiVersion
+                - kind
+                - name
+                type: object
             template:
               type: object
           type: object
@@ -1131,17 +1247,17 @@ spec:
                   type:
                     type: string
                 required:
-                  - type
-                  - status
+                - type
+                - status
                 type: object
               type: array
             sinkUri:
               type: string
           type: object
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -1154,25 +1270,25 @@ metadata:
       ]
   labels:
     duck.knative.dev/source: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     eventing.knative.dev/source: "true"
     knative.dev/crd-install: "true"
   name: cronjobsources.sources.eventing.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: sources.eventing.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
-      - sources
+    - all
+    - knative
+    - eventing
+    - sources
     kind: CronJobSource
     plural: cronjobsources
   scope: Namespaced
@@ -1208,50 +1324,50 @@ spec:
               type: string
             sink:
               anyOf:
-                - description: the destination that should receive events.
-                  properties:
-                    ref:
-                      description: a reference to a Kubernetes object from which to
-                        retrieve the target URI.
-                      properties:
-                        apiVersion:
-                          minLength: 1
-                          type: string
-                        kind:
-                          minLength: 1
-                          type: string
-                        name:
-                          minLength: 1
-                          type: string
-                      required:
-                        - apiVersion
-                        - kind
-                        - name
-                      type: object
-                    uri:
-                      description: the target URI. If ref is provided, this must be
-                        relative URI reference.
-                      type: string
-                  type: object
-                - description: 'DEPRECATED: a reference to a Kubernetes object from
-                  which to retrieve the target URI.'
-                  properties:
-                    apiVersion:
-                      minLength: 1
-                      type: string
-                    kind:
-                      minLength: 1
-                      type: string
-                    name:
-                      minLength: 1
-                      type: string
-                  required:
+              - description: the destination that should receive events.
+                properties:
+                  ref:
+                    description: a reference to a Kubernetes object from which to
+                      retrieve the target URI.
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
                     - apiVersion
                     - kind
                     - name
-                  type: object
+                    type: object
+                  uri:
+                    description: the target URI. If ref is provided, this must be
+                      relative URI reference.
+                    type: string
+                type: object
+              - description: 'DEPRECATED: a reference to a Kubernetes object from
+                  which to retrieve the target URI.'
+                properties:
+                  apiVersion:
+                    minLength: 1
+                    type: string
+                  kind:
+                    minLength: 1
+                    type: string
+                  name:
+                    minLength: 1
+                    type: string
+                required:
+                - apiVersion
+                - kind
+                - name
+                type: object
           required:
-            - schedule
+          - schedule
           type: object
         status:
           properties:
@@ -1271,55 +1387,55 @@ spec:
                   type:
                     type: string
                 required:
-                  - type
-                  - status
+                - type
+                - status
                 type: object
               type: array
             sinkUri:
               type: string
           type: object
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
   name: eventtypes.eventing.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .spec.type
-      name: Type
-      type: string
-    - JSONPath: .spec.source
-      name: Source
-      type: string
-    - JSONPath: .spec.schema
-      name: Schema
-      type: string
-    - JSONPath: .spec.broker
-      name: Broker
-      type: string
-    - JSONPath: .spec.description
-      name: Description
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
+  - JSONPath: .spec.type
+    name: Type
+    type: string
+  - JSONPath: .spec.source
+    name: Source
+    type: string
+  - JSONPath: .spec.schema
+    name: Schema
+    type: string
+  - JSONPath: .spec.broker
+    name: Broker
+    type: string
+  - JSONPath: .spec.description
+    name: Description
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
   group: eventing.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
+    - all
+    - knative
+    - eventing
     kind: EventType
     plural: eventtypes
     singular: eventtype
@@ -1345,13 +1461,13 @@ spec:
               minLength: 1
               type: string
           required:
-            - type
-            - source
-            - broker
+          - type
+          - source
+          - broker
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -1359,30 +1475,30 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
-  name: parallels.messaging.knative.dev
+  name: parallels.flows.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
-    - JSONPath: .status.address.url
-      name: URL
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-  group: messaging.knative.dev
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.url
+    name: URL
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
+  group: flows.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
-      - messaging
+    - all
+    - knative
+    - eventing
+    - flows
     kind: Parallel
     plural: parallels
     singular: parallel
@@ -1416,9 +1532,9 @@ spec:
                             minLength: 1
                             type: string
                         required:
-                          - apiVersion
-                          - kind
-                          - name
+                        - apiVersion
+                        - kind
+                        - name
                         type: object
                       uri:
                         description: the target URI or, if ref is provided, a relative
@@ -1428,47 +1544,47 @@ spec:
                     type: object
                   reply:
                     anyOf:
-                      - properties:
-                          uri:
-                            description: the target URI or, if ref is provided, a relative
-                              URI reference that will be combined with ref to produce
-                              a target URI.
-                            minLength: 1
-                            type: string
-                        type: object
-                      - description: a reference to a Kubernetes object from which to
-                          retrieve the target URI.
-                        properties:
-                          ref:
-                            properties:
-                              apiVersion:
-                                minLength: 1
-                                type: string
-                              kind:
-                                minLength: 1
-                                type: string
-                              name:
-                                minLength: 1
-                                type: string
-                            required:
-                              - apiVersion
-                              - kind
-                              - name
-                            type: object
-                        type: object
-                      - description: a reference to a Kubernetes object from which to
-                          retrieve the target URI.
-                        properties:
-                          apiVersion:
-                            minLength: 1
-                            type: string
-                          kind:
-                            minLength: 1
-                            type: string
-                          name:
-                            minLength: 1
-                            type: string
-                        type: object
+                    - properties:
+                        uri:
+                          description: the target URI or, if ref is provided, a relative
+                            URI reference that will be combined with ref to produce
+                            a target URI.
+                          minLength: 1
+                          type: string
+                      type: object
+                    - description: a reference to a Kubernetes object from which to
+                        retrieve the target URI.
+                      properties:
+                        ref:
+                          properties:
+                            apiVersion:
+                              minLength: 1
+                              type: string
+                            kind:
+                              minLength: 1
+                              type: string
+                            name:
+                              minLength: 1
+                              type: string
+                          required:
+                          - apiVersion
+                          - kind
+                          - name
+                          type: object
+                      type: object
+                    - description: a reference to a Kubernetes object from which to
+                        retrieve the target URI.
+                      properties:
+                        apiVersion:
+                          minLength: 1
+                          type: string
+                        kind:
+                          minLength: 1
+                          type: string
+                        name:
+                          minLength: 1
+                          type: string
+                      type: object
                     description: a reference to where the result of the subscriber
                       of this branch gets sent to. If not specified, the result is
                       sent to the Parallel reply.
@@ -1489,9 +1605,9 @@ spec:
                             minLength: 1
                             type: string
                         required:
-                          - apiVersion
-                          - kind
-                          - name
+                        - apiVersion
+                        - kind
+                        - name
                         type: object
                       uri:
                         description: the target URI or, if ref is provided, a relative
@@ -1500,7 +1616,7 @@ spec:
                         type: string
                     type: object
                 required:
-                  - subscriber
+                - subscriber
                 type: object
               type: array
             channelTemplate:
@@ -1517,58 +1633,58 @@ spec:
                 spec:
                   type: object
               required:
-                - apiVersion
-                - kind
+              - apiVersion
+              - kind
               type: object
             reply:
               anyOf:
-                - properties:
-                    uri:
-                      description: the target URI or, if ref is provided, a relative
-                        URI reference that will be combined with ref to produce a target
-                        URI.
-                      minLength: 1
-                      type: string
-                  type: object
-                - description: a reference to a Kubernetes object from which to retrieve
-                    the target URI.
-                  properties:
-                    ref:
-                      properties:
-                        apiVersion:
-                          minLength: 1
-                          type: string
-                        kind:
-                          minLength: 1
-                          type: string
-                        name:
-                          minLength: 1
-                          type: string
-                      required:
-                        - apiVersion
-                        - kind
-                        - name
-                      type: object
-                  type: object
-                - description: a reference to a Kubernetes object from which to retrieve
-                    the target URI.
-                  properties:
-                    apiVersion:
-                      minLength: 1
-                      type: string
-                    kind:
-                      minLength: 1
-                      type: string
-                    name:
-                      minLength: 1
-                      type: string
-                  type: object
+              - properties:
+                  uri:
+                    description: the target URI or, if ref is provided, a relative
+                      URI reference that will be combined with ref to produce a target
+                      URI.
+                    minLength: 1
+                    type: string
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  ref:
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
+                    - apiVersion
+                    - kind
+                    - name
+                    type: object
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  apiVersion:
+                    minLength: 1
+                    type: string
+                  kind:
+                    minLength: 1
+                    type: string
+                  name:
+                    minLength: 1
+                    type: string
+                type: object
               description: a reference to where the result of a branch subscriber
                 gets sent to when the branch does not have a reply.
               type: object
           required:
-            - branches
-            - channelTemplate
+          - branches
+          - channelTemplate
   version: v1alpha1
 
 ---
@@ -1577,30 +1693,30 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
-  name: sequences.messaging.knative.dev
+  name: sequences.flows.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
-    - JSONPath: .status.address.url
-      name: URL
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-  group: messaging.knative.dev
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.url
+    name: URL
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
+  group: flows.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
-      - messaging
+    - all
+    - knative
+    - eventing
+    - flows
     kind: Sequence
     plural: sequences
     singular: sequence
@@ -1626,52 +1742,52 @@ spec:
                 spec:
                   type: object
               required:
-                - apiVersion
-                - kind
+              - apiVersion
+              - kind
               type: object
             reply:
               anyOf:
-                - properties:
-                    uri:
-                      description: the target URI or, if ref is provided, a relative
-                        URI reference that will be combined with ref to produce a target
-                        URI.
-                      minLength: 1
-                      type: string
-                  type: object
-                - description: a reference to a Kubernetes object from which to retrieve
-                    the target URI.
-                  properties:
-                    ref:
-                      properties:
-                        apiVersion:
-                          minLength: 1
-                          type: string
-                        kind:
-                          minLength: 1
-                          type: string
-                        name:
-                          minLength: 1
-                          type: string
-                      required:
-                        - apiVersion
-                        - kind
-                        - name
-                      type: object
-                  type: object
-                - description: a reference to a Kubernetes object from which to retrieve
-                    the target URI.
-                  properties:
-                    apiVersion:
-                      minLength: 1
-                      type: string
-                    kind:
-                      minLength: 1
-                      type: string
-                    name:
-                      minLength: 1
-                      type: string
-                  type: object
+              - properties:
+                  uri:
+                    description: the target URI or, if ref is provided, a relative
+                      URI reference that will be combined with ref to produce a target
+                      URI.
+                    minLength: 1
+                    type: string
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  ref:
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
+                    - apiVersion
+                    - kind
+                    - name
+                    type: object
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  apiVersion:
+                    minLength: 1
+                    type: string
+                  kind:
+                    minLength: 1
+                    type: string
+                  name:
+                    minLength: 1
+                    type: string
+                type: object
               description: a reference to where the result of the last subscriber
                 gets sent to.
             steps:
@@ -1694,9 +1810,9 @@ spec:
                         minLength: 1
                         type: string
                     required:
-                      - apiVersion
-                      - kind
-                      - name
+                    - apiVersion
+                    - kind
+                    - name
                     type: object
                   uri:
                     description: the target URI or, if ref is provided, a relative
@@ -1706,42 +1822,439 @@ spec:
                 type: object
               type: array
           required:
-            - steps
-            - channelTemplate
+          - steps
+          - channelTemplate
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: "v0.11.0"
+    knative.dev/crd-install: "true"
+  name: parallels.messaging.knative.dev
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.url
+    name: URL
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
+  group: messaging.knative.dev
+  names:
+    categories:
+    - all
+    - knative
+    - eventing
+    - messaging
+    kind: Parallel
+    plural: parallels
+    singular: parallel
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            branches:
+              description: the list of filter/subscribers pairs.
+              items:
+                properties:
+                  filter:
+                    description: the destination of the filter expression that is
+                      guarding the branch.
+                    properties:
+                      ref:
+                        description: a reference to a Kubernetes object from which
+                          to retrieve the target URI.
+                        properties:
+                          apiVersion:
+                            minLength: 1
+                            type: string
+                          kind:
+                            minLength: 1
+                            type: string
+                          name:
+                            minLength: 1
+                            type: string
+                        required:
+                        - apiVersion
+                        - kind
+                        - name
+                        type: object
+                      uri:
+                        description: the target URI or, if ref is provided, a relative
+                          URI reference that will be combined with ref to produce
+                          a target URI.
+                        type: string
+                    type: object
+                  reply:
+                    anyOf:
+                    - properties:
+                        uri:
+                          description: the target URI or, if ref is provided, a relative
+                            URI reference that will be combined with ref to produce
+                            a target URI.
+                          minLength: 1
+                          type: string
+                      type: object
+                    - description: a reference to a Kubernetes object from which to
+                        retrieve the target URI.
+                      properties:
+                        ref:
+                          properties:
+                            apiVersion:
+                              minLength: 1
+                              type: string
+                            kind:
+                              minLength: 1
+                              type: string
+                            name:
+                              minLength: 1
+                              type: string
+                          required:
+                          - apiVersion
+                          - kind
+                          - name
+                          type: object
+                      type: object
+                    - description: a reference to a Kubernetes object from which to
+                        retrieve the target URI.
+                      properties:
+                        apiVersion:
+                          minLength: 1
+                          type: string
+                        kind:
+                          minLength: 1
+                          type: string
+                        name:
+                          minLength: 1
+                          type: string
+                      type: object
+                    description: a reference to where the result of the subscriber
+                      of this branch gets sent to. If not specified, the result is
+                      sent to the Parallel reply.
+                  subscriber:
+                    description: the destination of the events if the filter passes.
+                    properties:
+                      ref:
+                        description: a reference to a Kubernetes object from which
+                          to retrieve the target URI.
+                        properties:
+                          apiVersion:
+                            minLength: 1
+                            type: string
+                          kind:
+                            minLength: 1
+                            type: string
+                          name:
+                            minLength: 1
+                            type: string
+                        required:
+                        - apiVersion
+                        - kind
+                        - name
+                        type: object
+                      uri:
+                        description: the target URI or, if ref is provided, a relative
+                          URI reference that will be combined with ref to produce
+                          a target URI.
+                        type: string
+                    type: object
+                required:
+                - subscriber
+                type: object
+              type: array
+            channelTemplate:
+              description: specifies which Channel to use. If left unspecified, it
+                is set to the default Channel for the namespace (or cluster, in case
+                there are no defaults for the namespace).
+              properties:
+                apiVersion:
+                  minLength: 1
+                  type: string
+                kind:
+                  minLength: 1
+                  type: string
+                spec:
+                  type: object
+              required:
+              - apiVersion
+              - kind
+              type: object
+            reply:
+              anyOf:
+              - properties:
+                  uri:
+                    description: the target URI or, if ref is provided, a relative
+                      URI reference that will be combined with ref to produce a target
+                      URI.
+                    minLength: 1
+                    type: string
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  ref:
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
+                    - apiVersion
+                    - kind
+                    - name
+                    type: object
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  apiVersion:
+                    minLength: 1
+                    type: string
+                  kind:
+                    minLength: 1
+                    type: string
+                  name:
+                    minLength: 1
+                    type: string
+                type: object
+              description: a reference to where the result of a branch subscriber
+                gets sent to when the branch does not have a reply.
+              type: object
+          required:
+          - branches
+          - channelTemplate
+  version: v1alpha1
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    duck.knative.dev/addressable: "true"
+    eventing.knative.dev/release: "v0.11.0"
+    knative.dev/crd-install: "true"
+  name: sequences.messaging.knative.dev
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.url
+    name: URL
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
+  group: messaging.knative.dev
+  names:
+    categories:
+    - all
+    - knative
+    - eventing
+    - messaging
+    kind: Sequence
+    plural: sequences
+    singular: sequence
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            channelTemplate:
+              description: specifies which Channel to use. If left unspecified, it
+                is set to the default Channel for the namespace (or cluster, in case
+                there are no defaults for the namespace).
+              properties:
+                apiVersion:
+                  minLength: 1
+                  type: string
+                kind:
+                  minLength: 1
+                  type: string
+                spec:
+                  type: object
+              required:
+              - apiVersion
+              - kind
+              type: object
+            reply:
+              anyOf:
+              - properties:
+                  uri:
+                    description: the target URI or, if ref is provided, a relative
+                      URI reference that will be combined with ref to produce a target
+                      URI.
+                    minLength: 1
+                    type: string
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  ref:
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
+                    - apiVersion
+                    - kind
+                    - name
+                    type: object
+                type: object
+              - description: a reference to a Kubernetes object from which to retrieve
+                  the target URI.
+                properties:
+                  apiVersion:
+                    minLength: 1
+                    type: string
+                  kind:
+                    minLength: 1
+                    type: string
+                  name:
+                    minLength: 1
+                    type: string
+                type: object
+              description: a reference to where the result of the last subscriber
+                gets sent to.
+            steps:
+              description: the list of Destinations (processors / functions) that
+                will be called in the order provided.
+              items:
+                description: a processor / function in the Sequence.
+                properties:
+                  ref:
+                    description: a reference to a Kubernetes object from which to
+                      retrieve the target URI.
+                    properties:
+                      apiVersion:
+                        minLength: 1
+                        type: string
+                      kind:
+                        minLength: 1
+                        type: string
+                      name:
+                        minLength: 1
+                        type: string
+                    required:
+                    - apiVersion
+                    - kind
+                    - name
+                    type: object
+                  uri:
+                    description: the target URI or, if ref is provided, a relative
+                      URI reference that will be combined with ref to produce a target
+                      URI.
+                    type: string
+                type: object
+              type: array
+          required:
+          - steps
+          - channelTemplate
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    duck.knative.dev/binding: "true"
+    duck.knative.dev/source: "true"
+    eventing.knative.dev/release: "v0.11.0"
+    eventing.knative.dev/source: "true"
+    knative.dev/crd-install: "true"
+  name: sinkbindings.sources.eventing.knative.dev
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.conditions[?(@.type=='Ready')].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=='Ready')].reason
+    name: Reason
+    type: string
+  group: sources.eventing.knative.dev
+  names:
+    categories:
+    - all
+    - knative
+    - eventing
+    - sources
+    - bindings
+    kind: SinkBinding
+    plural: sinkbindings
+  scope: Namespaced
+  subresources:
+    status: {}
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
   name: subscriptions.messaging.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: messaging.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
+    - all
+    - knative
+    - eventing
     kind: Subscription
     plural: subscriptions
     shortNames:
-      - sub
+    - sub
     singular: subscription
   scope: Namespaced
   subresources:
@@ -1762,9 +2275,11 @@ spec:
                   minLength: 1
                   type: string
               required:
-                - apiVersion
-                - kind
-                - name
+              - apiVersion
+              - kind
+              - name
+              type: object
+            delivery:
               type: object
             reply:
               description: the destination that (optionally) receive events.
@@ -1795,52 +2310,52 @@ spec:
                       minLength: 1
                       type: string
                   required:
-                    - apiVersion
-                    - kind
-                    - name
+                  - apiVersion
+                  - kind
+                  - name
                   type: object
                 uri:
                   minLength: 1
                   type: string
               type: object
           required:
-            - channel
+          - channel
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
   name: triggers.eventing.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
-    - JSONPath: .spec.broker
-      name: Broker
-      type: string
-    - JSONPath: .status.subscriberURI
-      name: Subscriber_URI
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .spec.broker
+    name: Broker
+    type: string
+  - JSONPath: .status.subscriberURI
+    name: Subscriber_URI
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: eventing.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - eventing
+    - all
+    - knative
+    - eventing
     kind: Trigger
     plural: triggers
     singular: trigger
@@ -1886,9 +2401,9 @@ spec:
                       minLength: 1
                       type: string
                   required:
-                    - apiVersion
-                    - kind
-                    - name
+                  - apiVersion
+                  - kind
+                  - name
                   type: object
                 uri:
                   description: the target URI or, if ref is provided, a relative URI
@@ -1896,11 +2411,11 @@ spec:
                   type: string
               type: object
           required:
-            - subscriber
+          - subscriber
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: v1
@@ -1923,14 +2438,15 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     role: eventing-webhook
   name: eventing-webhook
   namespace: knative-eventing
 spec:
   ports:
-    - port: 443
-      targetPort: 8443
+  - name: https-webhook
+    port: 443
+    targetPort: 8443
   selector:
     role: eventing-webhook
 
@@ -1939,7 +2455,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-controller
   namespace: knative-eventing
 spec:
@@ -1953,49 +2469,49 @@ spec:
         sidecar.istio.io/inject: "false"
       labels:
         app: eventing-controller
-        eventing.knative.dev/release: "v0.10.0"
+        eventing.knative.dev/release: "v0.11.0"
     spec:
       containers:
-        - env:
-            - name: SYSTEM_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CONFIG_LOGGING_NAME
-              value: config-logging
-            - name: CONFIG_OBSERVABILITY_NAME
-              value: config-observability
-            - name: METRICS_DOMAIN
-              value: knative.dev/eventing
-            - name: BROKER_INGRESS_IMAGE
-              value: gcr.io/knative-releases/knative.dev/eventing/cmd/broker/ingress@sha256:09e0be131cf80431fb2fdaf06a865cc1f49d6aecf527878ced25af4c70cb4d3c
-            - name: BROKER_INGRESS_SERVICE_ACCOUNT
-              value: eventing-broker-ingress
-            - name: BROKER_FILTER_IMAGE
-              value: gcr.io/knative-releases/knative.dev/eventing/cmd/broker/filter@sha256:94043bca23a08d26ffd6bdf7111464237d22413023c5ba4338b931a5eab242bd
-            - name: BROKER_FILTER_SERVICE_ACCOUNT
-              value: eventing-broker-filter
-          image: gcr.io/knative-releases/knative.dev/eventing/cmd/controller@sha256:82fdc37bd5fc99d756a7a5e21a14fcaff7ad0a1f09ef2c33197bca9af9b329ba
-          name: eventing-controller
-          ports:
-            - containerPort: 9090
-              name: metrics
-          terminationMessagePolicy: FallbackToLogsOnError
-          volumeMounts:
-            - mountPath: /etc/config-logging
-              name: config-logging
+      - env:
+        - name: SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CONFIG_LOGGING_NAME
+          value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/eventing
+        - name: BROKER_INGRESS_IMAGE
+          value: gcr.io/knative-releases/knative.dev/eventing/cmd/broker/ingress@sha256:0f671b2c3f6ea952cb314b7e7d7ec929702c41c47f59cce1044cf7daa6212d2c
+        - name: BROKER_INGRESS_SERVICE_ACCOUNT
+          value: eventing-broker-ingress
+        - name: BROKER_FILTER_IMAGE
+          value: gcr.io/knative-releases/knative.dev/eventing/cmd/broker/filter@sha256:4cde6893d8763c1c8c52625338d698d5bf6857cf2c37e8e187c5d5a84d75514d
+        - name: BROKER_FILTER_SERVICE_ACCOUNT
+          value: eventing-broker-filter
+        image: gcr.io/knative-releases/knative.dev/eventing/cmd/controller@sha256:d071a79973911f45ffd9021ad7e7cc6f4e262b3f1edb77d9bfdcf91b0d657b4e
+        name: eventing-controller
+        ports:
+        - containerPort: 9090
+          name: metrics
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/config-logging
+          name: config-logging
       serviceAccountName: eventing-controller
       volumes:
-        - configMap:
-            name: config-logging
+      - configMap:
           name: config-logging
+        name: config-logging
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: sources-controller
   namespace: knative-eventing
 spec:
@@ -2009,65 +2525,125 @@ spec:
         sidecar.istio.io/inject: "false"
       labels:
         app: sources-controller
-        eventing.knative.dev/release: "v0.10.0"
+        eventing.knative.dev/release: "v0.11.0"
     spec:
       containers:
-        - env:
-            - name: SYSTEM_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CONFIG_LOGGING_NAME
-              value: config-logging
-            - name: CONFIG_OBSERVABILITY_NAME
-              value: config-observability
-            - name: METRICS_DOMAIN
-              value: knative.dev/sources
-            - name: CRONJOB_RA_IMAGE
-              value: gcr.io/knative-releases/knative.dev/eventing/cmd/cronjob_receive_adapter@sha256:bdf30b32d57e1536fca5e436ce9c074827afd5f6f5eceed4cc0a8ca97096cefa
-            - name: APISERVER_RA_IMAGE
-              value: gcr.io/knative-releases/knative.dev/eventing/cmd/apiserver_receive_adapter@sha256:67300996636df61f7271cfaed335b57daaea9496acebb6f8db68b9f81931b2db
-          image: gcr.io/knative-releases/knative.dev/eventing/cmd/sources_controller@sha256:27f0b025ea16907db2b52cb220894b91cac627c6fbff914fce90ae4d987f1b0b
-          name: controller
-          ports:
-            - containerPort: 9090
-              name: metrics
-          resources:
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          volumeMounts:
-            - mountPath: /etc/config-logging
-              name: config-logging
+      - env:
+        - name: SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CONFIG_LOGGING_NAME
+          value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/sources
+        - name: CRONJOB_RA_IMAGE
+          value: gcr.io/knative-releases/knative.dev/eventing/cmd/cronjob_receive_adapter@sha256:481f28c916ee68db2d2729e050bc94c88d8f39c95039de98f6400ee0ee2aca28
+        - name: APISERVER_RA_IMAGE
+          value: gcr.io/knative-releases/knative.dev/eventing/cmd/apiserver_receive_adapter@sha256:d6783c20324e19554b3cd8c3b1823c2bbaca71c657da7df73e582a00d618f5de
+        image: gcr.io/knative-releases/knative.dev/eventing/cmd/sources_controller@sha256:0df4cfcf82998eccf687a08a456f60578190e68175a441bcd3c26de7a4869739
+        name: controller
+        ports:
+        - containerPort: 9090
+          name: metrics
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - mountPath: /etc/config-logging
+          name: config-logging
       serviceAccountName: eventing-source-controller
       volumes:
-        - configMap:
-            name: config-logging
+      - configMap:
           name: config-logging
+        name: config-logging
 
 ---
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: webhook.eventing.knative.dev
 webhooks:
-  - admissionReviewVersions:
-      - v1beta1
-    clientConfig:
-      service:
-        name: eventing-webhook
-        namespace: knative-eventing
-    failurePolicy: Fail
-    name: webhook.eventing.knative.dev
+- admissionReviewVersions:
+  - v1beta1
+  clientConfig:
+    service:
+      name: eventing-webhook
+      namespace: knative-eventing
+  failurePolicy: Fail
+  name: webhook.eventing.knative.dev
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  labels:
+    eventing.knative.dev/release: "v0.11.0"
+  name: validation.webhook.eventing.knative.dev
+webhooks:
+- admissionReviewVersions:
+  - v1beta1
+  clientConfig:
+    service:
+      name: eventing-webhook
+      namespace: knative-eventing
+  failurePolicy: Fail
+  name: validation.webhook.eventing.knative.dev
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  labels:
+    serving.knative.dev/release: devel
+  name: config.webhook.eventing.knative.dev
+webhooks:
+- admissionReviewVersions:
+  - v1beta1
+  clientConfig:
+    service:
+      name: eventing-webhook
+      namespace: knative-eventing
+  failurePolicy: Fail
+  name: config.webhook.eventing.knative.dev
+  namespaceSelector:
+    matchExpressions:
+    - key: eventing.knative.dev/release
+      operator: Exists
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  labels:
+    eventing.knative.dev/release: "v0.11.0"
+  name: sinkbindings.webhook.sources.knative.dev
+webhooks:
+- admissionReviewVersions:
+  - v1beta1
+  clientConfig:
+    service:
+      name: eventing-webhook
+      namespace: knative-eventing
+  failurePolicy: Fail
+  name: sinkbindings.webhook.sources.knative.dev
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    eventing.knative.dev/release: "v0.11.0"
+  name: eventing-webhook-certs
+  namespace: knative-eventing
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: eventing-webhook
   namespace: knative-eventing
 spec:
@@ -2085,27 +2661,28 @@ spec:
         role: eventing-webhook
     spec:
       containers:
-        - env:
-            - name: SYSTEM_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CONFIG_LOGGING_NAME
-              value: config-logging
-            - name: METRICS_DOMAIN
-              value: knative.dev/eventing
-            - name: WEBHOOK_NAME
-              value: eventing-webhook
-            - name: REG_DELAY_TIME
-              value: "10"
-          image: gcr.io/knative-releases/knative.dev/eventing/cmd/webhook@sha256:fb8c72dc3c2897193a04459e2e05fc56f47228fe37981d7b653e87f1725a54bb
-          name: eventing-webhook
-          terminationMessagePolicy: FallbackToLogsOnError
+      - env:
+        - name: SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CONFIG_LOGGING_NAME
+          value: config-logging
+        - name: METRICS_DOMAIN
+          value: knative.dev/eventing
+        - name: WEBHOOK_NAME
+          value: eventing-webhook
+        image: gcr.io/knative-releases/knative.dev/eventing/cmd/webhook@sha256:75b2dfaaf279b98c2e90b02414b2255aebbc58b23beeba838feba57b09da12b6
+        name: eventing-webhook
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 20m
+            memory: 20Mi
+        terminationMessagePolicy: FallbackToLogsOnError
       serviceAccountName: eventing-webhook
-      volumes:
-        - configMap:
-            name: config-logging
-          name: config-logging
 
 ---
 apiVersion: v1
@@ -2232,18 +2809,18 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-addressable-resolver
 rules:
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - inmemorychannels
-      - inmemorychannels/status
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels
+  - inmemorychannels/status
+  verbs:
+  - get
+  - list
+  - watch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -2251,137 +2828,138 @@ kind: ClusterRole
 metadata:
   labels:
     duck.knative.dev/channelable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-channelable-manipulator
 rules:
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - inmemorychannels
-      - inmemorychannels/status
-    verbs:
-      - create
-      - get
-      - list
-      - watch
-      - update
-      - patch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels
+  - inmemorychannels/status
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-controller
 rules:
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - inmemorychannels
-      - inmemorychannels/status
-    verbs:
-      - get
-      - list
-      - watch
-      - update
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - inmemorychannels/finalizers
-    verbs:
-      - update
-  - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-  - apiGroups:
-      - ""
-    resources:
-      - endpoints
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-      - deployments/status
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - create
-      - patch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels
+  - inmemorychannels/status
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - deployments/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-dispatcher
 rules:
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - inmemorychannels
-      - inmemorychannels/status
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - messaging.knative.dev
-    resources:
-      - inmemorychannels/status
-    verbs:
-      - update
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels
+  - inmemorychannels/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - messaging.knative.dev
+  resources:
+  - inmemorychannels/status
+  verbs:
+  - update
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     messaging.knative.dev/channel: in-memory-channel
     messaging.knative.dev/role: dispatcher
   name: imc-dispatcher
   namespace: knative-eventing
 spec:
   ports:
-    - port: 80
-      protocol: TCP
-      targetPort: 8080
+  - name: http-dispatcher
+    port: 80
+    protocol: TCP
+    targetPort: 8080
   selector:
     messaging.knative.dev/channel: in-memory-channel
     messaging.knative.dev/role: dispatcher
@@ -2391,7 +2969,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-controller
   namespace: knative-eventing
 ---
@@ -2399,7 +2977,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-dispatcher
   namespace: knative-eventing
 
@@ -2408,31 +2986,31 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: imc-controller
 subjects:
-  - kind: ServiceAccount
-    name: imc-controller
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: imc-controller
+  namespace: knative-eventing
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-dispatcher
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: imc-dispatcher
 subjects:
-  - kind: ServiceAccount
-    name: imc-dispatcher
-    namespace: knative-eventing
+- kind: ServiceAccount
+  name: imc-dispatcher
+  namespace: knative-eventing
 
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -2440,35 +3018,35 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
     knative.dev/crd-install: "true"
     messaging.knative.dev/subscribable: "true"
   name: inmemorychannels.messaging.knative.dev
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.conditions[?(@.type=="Ready")].status
-      name: Ready
-      type: string
-    - JSONPath: .status.conditions[?(@.type=="Ready")].reason
-      name: Reason
-      type: string
-    - JSONPath: .status.address.url
-      name: URL
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
+  - JSONPath: .status.conditions[?(@.type=="Ready")].status
+    name: Ready
+    type: string
+  - JSONPath: .status.conditions[?(@.type=="Ready")].reason
+    name: Reason
+    type: string
+  - JSONPath: .status.address.url
+    name: URL
+    type: string
+  - JSONPath: .metadata.creationTimestamp
+    name: Age
+    type: date
   group: messaging.knative.dev
   names:
     categories:
-      - all
-      - knative
-      - messaging
-      - channel
+    - all
+    - knative
+    - messaging
+    - channel
     kind: InMemoryChannel
     plural: inmemorychannels
     shortNames:
-      - imc
+    - imc
     singular: inmemorychannel
   scope: Namespaced
   subresources:
@@ -2483,6 +3061,8 @@ spec:
                 subscribers:
                   items:
                     properties:
+                      deliveryURI:
+                        type: string
                       ref:
                         properties:
                           apiVersion:
@@ -2499,9 +3079,9 @@ spec:
                             minLength: 1
                             type: string
                         required:
-                          - namespace
-                          - name
-                          - uid
+                        - namespace
+                        - name
+                        - uid
                         type: object
                       replyURI:
                         minLength: 1
@@ -2513,20 +3093,20 @@ spec:
                         minLength: 1
                         type: string
                     required:
-                      - uid
+                    - uid
                   type: array
               type: object
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-controller
   namespace: knative-eventing
 spec:
@@ -2542,37 +3122,37 @@ spec:
         messaging.knative.dev/role: controller
     spec:
       containers:
-        - env:
-            - name: CONFIG_LOGGING_NAME
-              value: config-logging
-            - name: CONFIG_OBSERVABILITY_NAME
-              value: config-observability
-            - name: METRICS_DOMAIN
-              value: knative.dev/inmemorychannel-controller
-            - name: SYSTEM_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-          image: gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_controller@sha256:b07cb2a452a348643a7e806965b90af05d2a89f99e98ae3285179dee3e7cf6cf
-          name: controller
-          ports:
-            - containerPort: 9090
-              name: metrics
-          volumeMounts:
-            - mountPath: /etc/config-logging
-              name: config-logging
+      - env:
+        - name: CONFIG_LOGGING_NAME
+          value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/inmemorychannel-controller
+        - name: SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_controller@sha256:67cf35921e6ba4d8d5027637bdb9f0bec328e0ba5706fb0ea4eb32187a77bd0b
+        name: controller
+        ports:
+        - containerPort: 9090
+          name: metrics
+        volumeMounts:
+        - mountPath: /etc/config-logging
+          name: config-logging
       serviceAccountName: imc-controller
       volumes:
-        - configMap:
-            name: config-logging
+      - configMap:
           name: config-logging
+        name: config-logging
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    eventing.knative.dev/release: "v0.10.0"
+    eventing.knative.dev/release: "v0.11.0"
   name: imc-dispatcher
   namespace: knative-eventing
 spec:
@@ -2588,41 +3168,29 @@ spec:
         messaging.knative.dev/role: dispatcher
     spec:
       containers:
-        - env:
-            - name: CONFIG_LOGGING_NAME
-              value: config-logging
-            - name: CONFIG_OBSERVABILITY_NAME
-              value: config-observability
-            - name: METRICS_DOMAIN
-              value: knative.dev/inmemorychannel-dispatcher
-            - name: SYSTEM_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-          image: gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_dispatcher@sha256:7675ebbcb349a6362520d8210f25305d9863ff8a03668bb6b562322df9a47c18
-          name: dispatcher
-          ports:
-            - containerPort: 9090
-              name: metrics
-          volumeMounts:
-            - mountPath: /etc/config-logging
-              name: config-logging
+      - env:
+        - name: CONFIG_LOGGING_NAME
+          value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        - name: METRICS_DOMAIN
+          value: knative.dev/inmemorychannel-dispatcher
+        - name: SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: gcr.io/knative-releases/knative.dev/eventing/cmd/in_memory/channel_dispatcher@sha256:f5402f075154adfdfb72bf3e4e1a755df6eb57e0e5c7770450210c3b0270d38f
+        name: dispatcher
+        ports:
+        - containerPort: 9090
+          name: metrics
+        volumeMounts:
+        - mountPath: /etc/config-logging
+          name: config-logging
       serviceAccountName: imc-dispatcher
       volumes:
-        - configMap:
-            name: config-logging
+      - configMap:
           name: config-logging
+        name: config-logging
+
 ---
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: eventing-webhook
-  namespace: knative-eventing
-  labels:
-    app: eventing-webhook
-spec:
-  podSelector:
-    matchLabels:
-      app: eventing-webhook
-  ingress:
-    - {}
