@@ -26,3 +26,18 @@ spec:
   policyTypes:
   - Ingress
   - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: knative-eventing-cluster-local-gateway-hack
+  namespace: knative-serving-ingress
+spec:
+  ingress:
+  - from:
+    - namespaceSelector: {}
+  podSelector:
+    matchLabels:
+      istio: cluster-local-gateway
+  policyTypes:
+  - Ingress
