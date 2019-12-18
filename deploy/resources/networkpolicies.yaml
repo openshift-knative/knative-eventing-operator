@@ -27,6 +27,11 @@ spec:
   - Ingress
   - Egress
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: knative-serving-ingress
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
