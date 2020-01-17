@@ -168,6 +168,7 @@ func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEve
 		mf.InjectOwner(instance),
 		mf.InjectNamespace(instance.GetNamespace()),
 		addSCCforSpecialClusterRoles,
+		setSideEffects,
 	}
 	r.config.Transform(fns...)
 
@@ -271,6 +272,16 @@ func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) error {
 		}), "rules")
 	}
 
+	return nil
+}
+
+func setSideEffects(u *unstructured.Unstructured) error {
+	if u.GetKind() == "MutatingWebhookConfiguration" && "sinkbindings.webhook.sources.knative.dev" == u.GetName() {
+		field, _, _ := unstructured.NestedFieldNoCopy(u.Object, "webhooks")
+		unstructured.SetNestedField(u.Object, append(field.([]interface{}), map[string]interface{}{
+			"sideEffects": []interface{}{"None"},
+		}), "")
+	}
 	return nil
 }
 
