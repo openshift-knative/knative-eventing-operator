@@ -167,7 +167,6 @@ func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEve
 	fns := []mf.Transformer{
 		mf.InjectOwner(instance),
 		mf.InjectNamespace(instance.GetNamespace()),
-		addSCCforSpecialClusterRoles,
 		setSideEffects,
 	}
 	r.config.Transform(fns...)
@@ -222,56 +221,6 @@ func (r *ReconcileKnativeEventing) checkDeployments(instance *eventingv1alpha1.K
 	}
 	log.Info("All deployments are available")
 	instance.Status.MarkDeploymentsAvailable()
-	return nil
-}
-
-func addSCCforSpecialClusterRoles(u *unstructured.Unstructured) error {
-
-	// these do need some openshift specific SCC
-	clusterRoles := []string{
-		"addressable-resolver",
-		"broker-addressable-resolver",
-		"channel-addressable-resolver",
-		"in-memory-channel-controller",
-		"in-memory-channel-dispatcher",
-		"knative-eventing-controller",
-		"knative-eventing-webhook",
-		"serving-addressable-resolver",
-	}
-
-	matchesClusterRole := func(cr string) bool {
-		for _, i := range clusterRoles {
-			if cr == i {
-				return true
-			}
-		}
-		return false
-	}
-
-	// massage the roles that require SCC on Openshift:
-	if u.GetKind() == "ClusterRole" && matchesClusterRole(u.GetName()) {
-		field, _, _ := unstructured.NestedFieldNoCopy(u.Object, "rules")
-		// Required to properly run in OpenShift
-		unstructured.SetNestedField(u.Object, append(field.([]interface{}), map[string]interface{}{
-			"apiGroups":     []interface{}{"security.openshift.io"},
-			"verbs":         []interface{}{"use"},
-			"resources":     []interface{}{"securitycontextconstraints"},
-			"resourceNames": []interface{}{"privileged", "anyuid"},
-		}), "rules")
-	}
-
-	// fix the in-memory-channel-dispatcher to list configmaps
-	// see https://github.com/knative/eventing/issues/1333 for more
-	if u.GetKind() == "ClusterRole" && "in-memory-channel-dispatcher" == u.GetName() {
-		field, _, _ := unstructured.NestedFieldNoCopy(u.Object, "rules")
-		// Required to properly run in OpenShift
-		unstructured.SetNestedField(u.Object, append(field.([]interface{}), map[string]interface{}{
-			"apiGroups": []interface{}{""},
-			"verbs":     []interface{}{"get", "list", "watch"},
-			"resources": []interface{}{"configmaps"},
-		}), "rules")
-	}
-
 	return nil
 }
 
