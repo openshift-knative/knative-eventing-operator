@@ -2576,6 +2576,7 @@ webhooks:
       name: eventing-webhook
       namespace: knative-eventing
   failurePolicy: Fail
+  sideEffects: none
   name: webhook.eventing.knative.dev
 ---
 apiVersion: admissionregistration.k8s.io/v1beta1
@@ -2592,6 +2593,7 @@ webhooks:
       name: eventing-webhook
       namespace: knative-eventing
   failurePolicy: Fail
+  sideEffects: none
   name: validation.webhook.eventing.knative.dev
 ---
 apiVersion: admissionregistration.k8s.io/v1beta1
@@ -2608,6 +2610,7 @@ webhooks:
       name: eventing-webhook
       namespace: knative-eventing
   failurePolicy: Fail
+  sideEffects: none
   name: config.webhook.eventing.knative.dev
   namespaceSelector:
     matchExpressions:
@@ -2628,6 +2631,7 @@ webhooks:
       name: eventing-webhook
       namespace: knative-eventing
   failurePolicy: Fail
+  sideEffects: none
   name: sinkbindings.webhook.sources.knative.dev
 ---
 apiVersion: v1
