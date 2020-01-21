@@ -12,7 +12,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -167,7 +166,6 @@ func (r *ReconcileKnativeEventing) install(instance *eventingv1alpha1.KnativeEve
 	fns := []mf.Transformer{
 		mf.InjectOwner(instance),
 		mf.InjectNamespace(instance.GetNamespace()),
-		setSideEffects,
 	}
 	r.config.Transform(fns...)
 
@@ -221,16 +219,6 @@ func (r *ReconcileKnativeEventing) checkDeployments(instance *eventingv1alpha1.K
 	}
 	log.Info("All deployments are available")
 	instance.Status.MarkDeploymentsAvailable()
-	return nil
-}
-
-func setSideEffects(u *unstructured.Unstructured) error {
-	if u.GetKind() == "MutatingWebhookConfiguration" && "sinkbindings.webhook.sources.knative.dev" == u.GetName() {
-		field, _, _ := unstructured.NestedFieldNoCopy(u.Object, "webhooks")
-		unstructured.SetNestedField(u.Object, append(field.([]interface{}), map[string]interface{}{
-			"sideEffects": []interface{}{"None"},
-		}), "")
-	}
 	return nil
 }
 
