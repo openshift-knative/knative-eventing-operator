@@ -16,7 +16,7 @@ spec:
       containers:
         - name: knative-eventing-operator
           # Replace this with the built image name
-          image: quay.io/openshift-knative/knative-eventing-operator:v0.11.0
+          image: quay.io/openshift-knative/knative-eventing-operator:v0.12.0
           command:
           - knative-eventing-operator
           imagePullPolicy: Always
