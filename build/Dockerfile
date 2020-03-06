@@ -1,4 +1,4 @@
-FROM registry-proxy.engineering.redhat.com/rh-osbs/ubi8-minimal:8-released
+FROM FROM registry.access.redhat.com/ubi8/ubi-minimal:8.1
 
 ENV OPERATOR=/usr/local/bin/knative-eventing-operator \
     USER_UID=1001 \
