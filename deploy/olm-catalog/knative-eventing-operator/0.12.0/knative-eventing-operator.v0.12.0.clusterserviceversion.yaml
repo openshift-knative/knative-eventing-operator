@@ -14,6 +14,7 @@ metadata:
       primitives to enable late-binding event sources and event
       consumers.
     repository: https://github.com/openshift-knative/knative-eventing-operator
+    operators.operatorframework.io/internal-objects: '["knativeeventings.eventing.knative.dev"]'
     support: Red Hat
   name: knative-eventing-operator.v0.12.0
   namespace: placeholder
