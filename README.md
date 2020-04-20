@@ -1,3 +1,8 @@
+# DEPRECATED
+We no longer maintain this operator.
+
+See https://github.com/openshift-knative/serverless-operator for the new operator that handles Knative Eventing.
+
 # Knative Eventing Operator
 
 The following will install [Knative
